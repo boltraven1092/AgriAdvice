@@ -1,16 +1,15 @@
 :root {
-  --bg: #f4f7f8;
-  --surface: #f9fafb;
-  --line: #d1d8df;
-  --brand: #0f766e;
-  --brand-soft: #d1fae5;
-  --text-main: #142027;
-  --text-soft: #51616b;
+  --bg: #f8fafb;
+  --surface: #ffffff;
+  --border: #dce3e8;
+  --accent: #3c7a89;
+  --accent-strong: #2e6371;
+  --text-main: #1d2930;
+  --text-muted: #6a7a84;
 
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-  line-height: 1.45;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.5;
   font-weight: 400;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -25,19 +24,12 @@ body {
   margin: 0;
   min-width: 320px;
   color: var(--text-main);
-  background:
-    linear-gradient(160deg, rgba(219, 234, 254, 0.35), transparent 32%),
-    linear-gradient(330deg, rgba(220, 252, 231, 0.35), transparent 35%),
-    var(--bg);
+  background: var(--bg);
 }
 
 h1,
 h2,
-h3 {
-  margin: 0;
-  color: var(--text-main);
-}
-
+h3,
 p {
   margin: 0;
 }

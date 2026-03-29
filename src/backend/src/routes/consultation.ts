@@ -2,7 +2,9 @@ import { Request, Router } from "express";
 import multer from "multer";
 import { z } from "zod";
 import { config } from "../config/env";
+import { requireAuth } from "../middleware/auth";
 import { requestConsultationByAudio, requestConsultationByText } from "../services/aiPipelineClient";
+import { createConsultationRecord } from "../services/consultationStore";
 import { ApiEnvelope, ConsultationData } from "../types/api";
 import { consultationAudioHintSchema, consultationTextSchema } from "../validators/consultation";
 
@@ -42,7 +44,7 @@ const routeSchema = z.object({
 
 export const consultationRouter = Router();
 
-consultationRouter.post("/consultation", upload.single("audio"), async (req, res, next) => {
+consultationRouter.post("/consultation", requireAuth, upload.single("audio"), async (req, res, next) => {
   const start = Date.now();
 
   try {
@@ -55,13 +57,26 @@ consultationRouter.post("/consultation", upload.single("audio"), async (req, res
     if (parsedRoute.inputType === "text") {
       const parsedText = consultationTextSchema.parse({
         inputType: req.body?.inputType,
+        preferredLanguage: req.body?.preferredLanguage,
         textQuery: req.body?.textQuery,
       });
 
-      data = await requestConsultationByText(parsedText.textQuery);
+      data = await requestConsultationByText(parsedText.textQuery, parsedText.preferredLanguage);
+
+      if (req.user?.id) {
+        await createConsultationRecord({
+          userId: req.user.id,
+          inputType: "text",
+          textQuery: parsedText.textQuery,
+          detectedLanguage: data.detectedLanguage,
+          originalTranscript: data.originalTranscript,
+          translatedResponse: data.translatedResponse,
+        });
+      }
     } else {
-      consultationAudioHintSchema.parse({
+      const parsedAudioHint = consultationAudioHintSchema.parse({
         inputType: req.body?.inputType,
+        preferredLanguage: req.body?.preferredLanguage,
       });
 
       if (!req.file || !req.file.buffer || req.file.buffer.length === 0) {
@@ -73,7 +88,17 @@ consultationRouter.post("/consultation", upload.single("audio"), async (req, res
       }
 
       const base64Audio = req.file.buffer.toString("base64");
-      data = await requestConsultationByAudio(base64Audio);
+      data = await requestConsultationByAudio(base64Audio, parsedAudioHint.preferredLanguage);
+
+      if (req.user?.id) {
+        await createConsultationRecord({
+          userId: req.user.id,
+          inputType: "audio",
+          detectedLanguage: data.detectedLanguage,
+          originalTranscript: data.originalTranscript,
+          translatedResponse: data.translatedResponse,
+        });
+      }
     }
 
     const response: ApiEnvelope<ConsultationData> = {

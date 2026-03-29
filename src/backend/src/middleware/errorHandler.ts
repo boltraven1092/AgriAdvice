@@ -47,12 +47,13 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
 
   if (err instanceof Error) {
     const knownStatus = (err as Error & { statusCode?: number }).statusCode;
+    const knownCode = (err as Error & { errorCode?: string }).errorCode;
     const statusCode = typeof knownStatus === "number" ? knownStatus : 500;
     const response: ApiEnvelope<null> = {
       success: false,
       data: null,
       error: {
-        code: statusCode >= 500 ? "INTERNAL_ERROR" : "REQUEST_ERROR",
+        code: knownCode || (statusCode >= 500 ? "INTERNAL_ERROR" : "REQUEST_ERROR"),
         message: err.message,
       },
     };

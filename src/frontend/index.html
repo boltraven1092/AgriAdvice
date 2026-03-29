@@ -1,13 +1,3320 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriAdvice | AI Advisory for Rural Farmers</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@500;700&display=swap');
+
+    :root {
+      /* Brand colors */
+      --color-primary:         #C1440E;
+      --color-primary-hover:   #A33A0C;
+      --color-primary-light:   #F5E6DF;
+      --color-secondary:       #D4860A;
+      --color-secondary-light: #FDF0D5;
+      --color-success:         #2D5016;
+      --color-success-light:   #E8F0DF;
+      --color-warning:         #B45309;
+      --color-danger:          #991B1B;
+
+      /* Neutrals */
+      --color-bg:              #FBF7F0;
+      --color-surface:         #FFFFFF;
+      --color-surface-warm:    #FDF5EC;
+      --color-border:          #E8DDD0;
+      --color-border-strong:   #C4A882;
+
+      /* Text */
+      --color-text-primary:    #2C1810;
+      --color-text-secondary:  #6B4C3B;
+      --color-text-muted:      #9C7B6A;
+      --color-text-on-primary: #FFFFFF;
+      --color-text-on-dark:    #FBF7F0;
+
+      /* Typography */
+      --font-heading:          'Plus Jakarta Sans', sans-serif;
+      --font-body:             'Inter', sans-serif;
+      --text-xs:               12px;
+      --text-sm:               14px;
+      --text-base:             16px;
+      --text-lg:               18px;
+      --text-xl:               22px;
+      --text-2xl:              28px;
+      --text-3xl:              36px;
+      --text-4xl:              48px;
+      --weight-regular:        400;
+      --weight-medium:         500;
+      --weight-bold:           700;
+      --leading-tight:         1.2;
+      --leading-normal:        1.6;
+      --leading-relaxed:       1.8;
+
+      /* Spacing scale */
+      --space-1:   4px;
+      --space-2:   8px;
+      --space-3:   12px;
+      --space-4:   16px;
+      --space-5:   20px;
+      --space-6:   24px;
+      --space-8:   32px;
+      --space-10:  40px;
+      --space-12:  48px;
+      --space-16:  64px;
+      --space-20:  80px;
+
+      /* Border radius */
+      --radius-sm:   6px;
+      --radius-md:   12px;
+      --radius-lg:   16px;
+      --radius-xl:   24px;
+      --radius-full: 9999px;
+
+      /* Shadows */
+      --shadow-sm:  0 1px 3px rgba(44, 24, 16, 0.08);
+      --shadow-md:  0 4px 12px rgba(44, 24, 16, 0.10);
+      --shadow-lg:  0 8px 24px rgba(44, 24, 16, 0.12);
+
+      /* Transitions */
+      --transition-fast:   150ms ease;
+      --transition-base:   250ms ease;
+
+      /* Layout */
+      --max-width:         1100px;
+      --nav-height:        64px;
+      --section-padding-y: var(--space-20);
+      --card-padding:      var(--space-6);
+      --touch-target:      48px;
+
+      /* Additional tokens */
+      --color-danger-light: #FEE2E2;
+      --border-width-thin: 1px;
+      --outline-width: 3px;
+      --outline-offset: 2px;
+      --icon-size: 40px;
+      --hero-max-width: 520px;
+      --demo-min-height: 300px;
+      --max-content-width: 100%;
+      --card-lift-distance: -2px;
+      --button-active-scale: 0.97;
+      --step-badge-size: var(--space-10);
+      --connector-offset: var(--space-5);
+      --control-gap: var(--space-2);
+      --control-padding-x: var(--space-4);
+      --chat-source-gap: var(--space-3);
+      --chat-input-min-width: var(--space-16);
+      --z-nav: var(--space-12);
+      --z-popup: var(--space-16);
+      --help-chip-width: fit-content;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      line-height: var(--leading-normal);
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      color: var(--color-text-primary);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-tight);
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-weight: var(--weight-regular);
+      line-height: var(--leading-normal);
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    label {
+      min-height: var(--touch-target);
+      font-size: var(--text-base);
+    }
+
+    a,
+    .button-base,
+    .badge,
+    .nav-label,
+    .mode-button {
+      font-family: var(--font-heading);
+      font-weight: var(--weight-medium);
+    }
+
+    button,
+    .mode-button,
+    .connectivity-toggle,
+    .language-toggle {
+      border: var(--border-width-thin) solid transparent;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    button:hover,
+    .mode-button:hover,
+    .connectivity-toggle:hover,
+    .language-toggle:hover {
+      background: var(--color-primary-hover);
+      transition: var(--transition-fast);
+      color: var(--color-text-on-primary);
+      border-color: var(--color-primary-hover);
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    .mode-button:focus-visible {
+      outline: var(--outline-width) solid var(--color-primary);
+      outline-offset: var(--outline-offset);
+    }
+
+    button:active,
+    .mode-button:active,
+    .connectivity-toggle:active,
+    .language-toggle:active {
+      transform: scale(var(--button-active-scale));
+    }
+
+    .page {
+      width: var(--max-content-width);
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: var(--max-content-width);
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+    }
+
+    .section {
+      padding-top: var(--section-padding-y);
+      padding-bottom: var(--section-padding-y);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-nav);
+      height: var(--nav-height);
+      background: var(--color-surface);
+      border-bottom: var(--border-width-thin) solid var(--color-border);
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .nav-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--control-gap);
+    }
+
+    .nav-lang-label {
+      color: var(--color-text-secondary);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-medium);
+      font-size: var(--text-sm);
+      min-height: var(--touch-target);
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: var(--touch-target);
+      text-decoration: none;
+      color: var(--color-text-primary);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-bold);
+      font-size: var(--text-xl);
+    }
+
+    .logo svg {
+      width: var(--space-8);
+      height: var(--space-8);
+      color: var(--color-success);
+      flex-shrink: 0;
+    }
+
+    .connectivity-toggle,
+    .language-toggle {
+      border: var(--border-width-thin) solid var(--color-border-strong);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      padding: 0 var(--control-padding-x);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+      font-size: var(--text-sm);
+    }
+
+    .connectivity-toggle.is-online {
+      background: var(--color-success-light);
+      color: var(--color-success);
+      border-color: var(--color-success);
+    }
+
+    .connectivity-dot {
+      width: var(--space-3);
+      height: var(--space-3);
+      border-radius: var(--radius-full);
+      background: var(--color-text-muted);
+    }
+
+    .connectivity-toggle.is-online .connectivity-dot {
+      background: var(--color-success);
+    }
+
+    .language-toggle {
+      color: var(--color-text-primary);
+      border-color: var(--color-border-strong);
+      background: var(--color-surface);
+    }
+
+    .language-select {
+      border: var(--border-width-thin) solid var(--color-border-strong);
+      border-radius: var(--radius-full);
+      background:
+        linear-gradient(180deg, #fff7ec 0%, #fdf1de 100%),
+        var(--color-surface);
+      color: var(--color-text-primary);
+      padding: 0 calc(var(--control-padding-x) + 18px) 0 var(--control-padding-x);
+      min-height: var(--touch-target);
+      min-width: var(--touch-target);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-medium);
+      font-size: var(--text-sm);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-fast);
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--color-primary) 50%),
+        linear-gradient(135deg, var(--color-primary) 50%, transparent 50%),
+        linear-gradient(180deg, #fff7ec 0%, #fdf1de 100%);
+      background-position:
+        calc(100% - 16px) calc(50% - 3px),
+        calc(100% - 10px) calc(50% - 3px),
+        0 0;
+      background-size: 6px 6px, 6px 6px, 100% 100%;
+      background-repeat: no-repeat;
+    }
+
+    .language-select:hover {
+      border-color: var(--color-primary-hover);
+      box-shadow: var(--shadow-md);
+    }
+
+    .language-select:focus-visible {
+      outline: var(--outline-width) solid var(--color-secondary);
+      outline-offset: var(--outline-offset);
+    }
+
+    .language-select option {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-weight: var(--weight-regular);
+    }
+
+    .language-toggle svg {
+      width: var(--space-5);
+      height: var(--space-5);
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+
+    .hero {
+      background: var(--color-surface-warm);
+    }
+
+    .hero-content {
+      display: grid;
+      gap: var(--space-6);
+      align-items: center;
+    }
+
+    .hero-text {
+      display: grid;
+      gap: var(--space-4);
+      max-width: var(--hero-max-width);
+    }
+
+    .hero h1 {
+      font-size: var(--text-3xl);
+    }
+
+    .hero-subtitle {
+      color: var(--color-text-secondary);
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .cta-primary {
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      border-radius: var(--radius-full);
+      border: var(--border-width-thin) solid var(--color-primary);
+      padding: var(--space-4) var(--space-8);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+    }
+
+    .cta-primary:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+      color: var(--color-text-on-primary);
+    }
+
+    .offline-badge {
+      background: var(--color-success-light);
+      color: var(--color-success);
+      border-radius: var(--radius-full);
+      border: var(--border-width-thin) solid var(--color-success);
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--text-sm);
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .helper-text {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .helper-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .helper-chip {
+      width: var(--help-chip-width);
+      border-radius: var(--radius-full);
+      border: var(--border-width-thin) solid var(--color-border-strong);
+      background: var(--color-primary-light);
+      color: var(--color-text-secondary);
+      padding: var(--space-2) var(--space-4);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-medium);
+      font-size: var(--text-sm);
+    }
+
+    .how-grid {
+      position: relative;
+      display: grid;
+      gap: var(--space-6);
+    }
+
+    .how-step {
+      position: relative;
+      background: var(--color-surface);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--card-padding);
+      display: grid;
+      gap: var(--space-3);
+      transition: var(--transition-base);
+    }
+
+    .how-step:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(var(--card-lift-distance));
+      transition: var(--transition-base);
+    }
+
+    .how-step::before {
+      content: "";
+      position: absolute;
+      left: var(--connector-offset);
+      top: calc(var(--step-badge-size) + var(--space-2));
+      bottom: calc(var(--space-2) * -1);
+      width: var(--border-width-thin);
+      border-left: var(--border-width-thin) dashed var(--color-border);
+    }
+
+    .how-step:last-child::before {
+      display: none;
+    }
+
+    .step-number {
+      width: var(--step-badge-size);
+      height: var(--step-badge-size);
+      border-radius: var(--radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: var(--weight-bold);
+      font-size: var(--text-base);
+    }
+
+    .step-title {
+      font-size: var(--text-xl);
+    }
+
+    .step-description {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+    }
+
+    .demo-panel {
+      background: var(--color-surface-warm);
+      border-radius: var(--radius-xl);
+      padding: var(--card-padding);
+      border: var(--border-width-thin) solid var(--color-border);
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .demo-heading {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .demo-heading p {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .chat-window {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      border: var(--border-width-thin) solid var(--color-border);
+      min-height: var(--demo-min-height);
+      padding: var(--space-4);
+      display: grid;
+      gap: var(--space-4);
+      align-content: start;
+      overflow-y: auto;
+    }
+
+    .bubble {
+      max-width: var(--max-content-width);
+      width: fit-content;
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-base);
+    }
+
+    .bubble:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(var(--card-lift-distance));
+      transition: var(--transition-base);
+    }
+
+    .bubble.farmer {
+      justify-self: end;
+      background: var(--color-primary-light);
+      color: var(--color-text-primary);
+      border-bottom-right-radius: var(--radius-sm);
+    }
+
+    .bubble.agent {
+      justify-self: start;
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-bottom-left-radius: var(--radius-sm);
+      display: grid;
+      gap: var(--chat-source-gap);
+    }
+
+    .confidence-badge {
+      width: fit-content;
+      border-radius: var(--radius-full);
+      padding: var(--space-1) var(--space-3);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-medium);
+      font-size: var(--text-sm);
+    }
+
+    .confidence-high {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .confidence-medium {
+      background: var(--color-secondary-light);
+      color: var(--color-warning);
+    }
+
+    .confidence-low {
+      background: var(--color-danger-light);
+      color: var(--color-danger);
+    }
+
+    .source-line {
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+    }
+
+    .chat-form {
+      display: grid;
+      gap: var(--space-3);
+    }
+
+    .mode-switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .mode-button {
+      border: var(--border-width-thin) solid var(--color-border-strong);
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--color-text-secondary);
+      padding: 0 var(--space-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+      text-decoration: none;
+    }
+
+    .mode-button.is-active {
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      border-color: var(--color-primary);
+    }
+
+    .input-pane {
+      display: none;
+      gap: var(--space-3);
+    }
+
+    .input-pane.is-active {
+      display: grid;
+    }
+
+    .chat-label {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+      font-family: var(--font-body);
+      font-weight: var(--weight-regular);
+    }
+
+    .chat-input,
+    .chat-textarea,
+    .file-input {
+      background: var(--color-surface);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-primary);
+      padding: 0 var(--space-4);
+      min-width: var(--chat-input-min-width);
+      width: var(--max-content-width);
+      font-family: var(--font-body);
+      font-weight: var(--weight-regular);
+      font-size: var(--text-base);
+    }
+
+    .chat-input::placeholder,
+    .chat-textarea::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    .chat-textarea {
+      min-height: var(--space-20);
+      padding-top: var(--space-3);
+      padding-bottom: var(--space-3);
+      resize: vertical;
+    }
+
+    .chat-input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .live-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .icon-button {
+      border-radius: var(--radius-full);
+      border: var(--border-width-thin) solid var(--color-secondary);
+      background: var(--color-secondary);
+      color: var(--color-text-on-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+      padding: 0 var(--space-4);
+      position: relative;
+    }
+
+    .icon-button:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+    }
+
+    .icon-button svg {
+      width: var(--space-5);
+      height: var(--space-5);
+      color: var(--color-text-on-primary);
+    }
+
+    .send-button {
+      border-radius: var(--radius-full);
+      border: var(--border-width-thin) solid var(--color-primary);
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      padding: 0 var(--space-6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+    }
+
+    .send-button:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+    }
+
+    .send-button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .ghost-action {
+      border: var(--border-width-thin) solid var(--color-border-strong);
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-4);
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+    }
+
+    .status-note {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .audio-preview {
+      width: var(--max-content-width);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      min-height: var(--touch-target);
+      display: none;
+    }
+
+    .audio-preview.has-audio {
+      display: block;
+    }
+
+    .bubble.typing {
+      opacity: 0.85;
+    }
+
+    .typing-dots {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      min-height: 18px;
+    }
+
+    .typing-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: var(--radius-full);
+      background: var(--color-text-muted);
+      animation: typingPulse 1.1s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .icon-button.is-recording {
+      background: var(--color-danger);
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 0 rgba(153, 27, 27, 0.45);
+      animation: recordPulse 1.4s infinite;
+    }
+
+    .status-note.is-recording {
+      color: var(--color-danger);
+      font-weight: var(--weight-medium);
+    }
+
+    .bubble.agent.error {
+      border-color: var(--color-danger);
+      background: #fff7f7;
+    }
+
+    .admin-path-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+      justify-content: space-between;
+      border: var(--border-width-thin) dashed var(--color-border-strong);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      background: var(--color-surface-warm);
+    }
+
+    .admin-path-text {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      word-break: break-all;
+    }
+
+    .admin-logs-panel .history-list {
+      height: auto;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface-warm);
+      padding: var(--space-4);
+    }
+
+    .admin-search {
+      background: var(--color-surface);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-md);
+      min-height: var(--touch-target);
+      padding: 0 var(--space-4);
+      font-size: var(--text-sm);
+    }
+
+    @keyframes typingPulse {
+      0%,
+      80%,
+      100% {
+        transform: scale(0.85);
+        opacity: 0.4;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes recordPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(153, 27, 27, 0.45);
+      }
+      70% {
+        box-shadow: 0 0 0 12px rgba(153, 27, 27, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(153, 27, 27, 0);
+      }
+    }
+
+    .features-grid {
+      display: grid;
+      gap: var(--space-6);
+    }
+
+    .feature-card {
+      background: var(--color-surface);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--card-padding);
+      display: grid;
+      gap: var(--space-3);
+      transition: var(--transition-base);
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(var(--card-lift-distance));
+      transition: var(--transition-base);
+    }
+
+    .feature-icon {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      border-radius: var(--radius-md);
+      background: var(--color-primary-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+    }
+
+    .feature-icon svg {
+      width: var(--space-5);
+      height: var(--space-5);
+    }
+
+    .feature-title {
+      font-size: var(--text-xl);
+    }
+
+    .feature-copy {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+    }
+
+    .impact {
+      background: var(--color-surface-warm);
+    }
+
+    .impact-grid {
+      display: grid;
+      gap: var(--space-6);
+    }
+
+    .impact-card {
+      background: var(--color-surface);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--card-padding);
+      text-align: center;
+      transition: var(--transition-base);
+    }
+
+    .impact-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(var(--card-lift-distance));
+      transition: var(--transition-base);
+    }
+
+    .impact-number {
+      color: var(--color-success);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-bold);
+      font-size: var(--text-4xl);
+      line-height: var(--leading-tight);
+    }
+
+    .impact-label {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+      margin-top: var(--space-2);
+      font-family: var(--font-body);
+      font-weight: var(--weight-regular);
+    }
+
+    .footer {
+      background: var(--color-text-primary);
+      color: var(--color-text-on-dark);
+      padding: var(--space-10) var(--space-6);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+    }
+
+    .footer .container {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .footer p {
+      color: var(--color-text-on-dark);
+      font-size: var(--text-sm);
+    }
+
+    .footer-link {
+      color: var(--color-text-on-dark);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: var(--touch-target);
+    }
+
+    .footer-link:hover {
+      color: var(--color-secondary);
+    }
+
+    @media (min-width: 768px) {
+      .hero h1 {
+        font-size: var(--text-4xl);
+      }
+
+      .how-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .how-grid::before {
+        content: "";
+        position: absolute;
+        left: var(--space-10);
+        right: var(--space-10);
+        top: calc(var(--step-badge-size) / 2);
+        border-top: var(--border-width-thin) dashed var(--color-border);
+      }
+
+      .how-step::before {
+        display: none;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .impact-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .chat-input-row {
+        grid-template-columns: 1fr auto auto;
+      }
+    }
+
+    /* History Button and Modal Styles */
+    .demo-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      padding-top: var(--space-4);
+      border-top: var(--border-width-thin) solid var(--color-border);
+    }
+
+    .secondary-button {
+      background: var(--color-secondary-light);
+      color: var(--color-secondary);
+      border: var(--border-width-thin) solid var(--color-secondary);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-md);
+      font-weight: var(--weight-medium);
+      cursor: pointer;
+      transition: var(--transition-base);
+      font-size: var(--text-base);
+    }
+
+    .secondary-button:hover {
+      background: var(--color-secondary);
+      color: var(--color-text-on-primary);
+    }
+
+    .secondary-button:active {
+      transform: scale(var(--button-active-scale));
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 24, 16, 0.5);
+      cursor: pointer;
+    }
+
+    .modal-content {
+      position: relative;
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1001;
+    }
+
+    #adminModal .modal-content {
+      max-height: min(88vh, 760px);
+      height: min(88vh, 760px);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-6);
+      border-bottom: var(--border-width-thin) solid var(--color-border);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: var(--text-xl);
+      color: var(--color-text-primary);
+    }
+
+    .modal-close-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      padding: var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      transition: var(--transition-base);
+    }
+
+    .modal-close-button:hover {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .modal-close-button svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-6);
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .history-empty {
+      color: var(--color-text-muted);
+      text-align: center;
+      padding: var(--space-8);
+      font-size: var(--text-base);
+    }
+
+    .history-item {
+      background: var(--color-surface-warm);
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: var(--space-2);
+    }
+
+    .history-item-language {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+
+    .history-item-delete {
+      background: none;
+      border: none;
+      color: var(--color-danger);
+      cursor: pointer;
+      padding: var(--space-2);
+      font-size: var(--text-sm);
+      text-decoration: underline;
+      transition: var(--transition-base);
+    }
+
+    .history-item-delete:hover {
+      opacity: 0.7;
+    }
+
+    .history-item-question {
+      font-weight: var(--weight-medium);
+      color: var(--color-text-primary);
+      word-break: break-word;
+    }
+
+    .history-item-answer {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      word-break: break-word;
+    }
+
+    .history-item-time {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .bubble-content {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .bubble-content p,
+    .bubble-content ul,
+    .bubble-content ol {
+      margin: 0;
+    }
+
+    .bubble-content ul,
+    .bubble-content ol {
+      padding-left: var(--space-6);
+    }
+
+    .admin-login-panel,
+    .admin-logs-panel {
+      display: grid;
+      gap: var(--space-4);
+      padding: var(--space-6);
+      min-height: 0;
+    }
+
+    .admin-logs-panel {
+      grid-template-rows: auto auto auto minmax(0, 1fr);
+      overflow: hidden;
+      height: 100%;
+    }
+
+    #adminModal [hidden] {
+      display: none !important;
+    }
+
+    .admin-login-form {
+      display: grid;
+      gap: var(--space-3);
+    }
+
+    .modal-header-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .admin-header-logout {
+      border: var(--border-width-thin) solid var(--color-border-strong);
+      border-radius: var(--radius-full);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      padding: 0 var(--space-3);
+      min-height: 36px;
+      cursor: pointer;
+      font-size: var(--text-sm);
+    }
+    .admin-log-item {
+      border: var(--border-width-thin) solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      background: var(--color-bg);
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .admin-log-row {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      font-size: var(--text-sm);
+    }
+
+    .modal-footer {
+      padding: var(--space-6);
+      border-top: var(--border-width-thin) solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .ghost-action {
+      background: none;
+      border: none;
+      color: var(--color-danger);
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: var(--text-base);
+      transition: var(--transition-base);
+      padding: var(--space-2) var(--space-4);
+    }
+
+    .ghost-action:hover {
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95%;
+        max-height: 90vh;
+      }
+
+      #adminModal .modal-content {
+        max-height: 92vh;
+        height: 92vh;
+      }
+
+      .history-item {
+        gap: var(--space-3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav" aria-label="Main">
+      <div class="container nav-row">
+        <a class="logo" href="#home" aria-label="AgriAdvice Home">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M20 4c-6 0-10 3-12 8-1 2-1 5-1 8 3 0 6 0 8-1 5-2 8-6 8-12V4h-3Zm-8 11c-1 0-2 0-3 1 1-1 1-2 1-3 1-3 4-5 8-6-1 4-3 7-6 8Z"/>
+          </svg>
+          <span data-i18n="brand.name">AgriAdvice</span>
+        </a>
+        <div class="nav-controls">
+          <button id="connectivityToggle" class="connectivity-toggle is-online" type="button" aria-label="Toggle connectivity mode">
+            <span class="connectivity-dot" aria-hidden="true"></span>
+            <span id="connectivityText" class="nav-label" data-i18n="status.online">Online</span>
+          </button>
+          <button id="adminButton" class="secondary-button" type="button" data-i18n="admin.button">Admin</button>
+          <label for="languageSelect" class="nav-lang-label" data-i18n="language.label">Language</label>
+          <select id="languageSelect" class="language-select" aria-label="Choose language">
+            <option value="en">English</option>
+            <option value="as">Assamese</option>
+            <option value="bn">Bengali</option>
+            <option value="brx">Bodo</option>
+            <option value="doi">Dogri</option>
+            <option value="gu">Gujarati</option>
+            <option value="hi">Hindi</option>
+            <option value="kn">Kannada</option>
+            <option value="ks">Kashmiri</option>
+            <option value="kok">Konkani</option>
+            <option value="mai">Maithili</option>
+            <option value="ml">Malayalam</option>
+            <option value="mni">Manipuri</option>
+            <option value="mr">Marathi</option>
+            <option value="ne">Nepali</option>
+            <option value="or">Odia</option>
+            <option value="pa">Punjabi</option>
+            <option value="sa">Sanskrit</option>
+            <option value="sat">Santali</option>
+            <option value="sd">Sindhi</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="ur">Urdu</option>
+          </select>
+        </div>
+      </div>
+    </nav>
+
+    <header id="home" class="hero section">
+      <div class="container hero-content">
+        <div class="hero-text">
+          <h1 data-i18n="hero.title">Farming advice in your language, even with weak internet</h1>
+          <p class="hero-subtitle" data-i18n="hero.subtitle">AgriAdvice gives clear, local crop guidance for daily decisions. Built for first-time smartphone users in rural India.</p>
+          <div class="hero-actions">
+            <a class="cta-primary button-base" href="#demo" data-i18n="hero.cta">Try the Agent</a>
+            <span class="offline-badge badge" data-i18n="hero.offline">Works offline</span>
+          </div>
+          <p class="helper-text" data-i18n="hero.help">No technical setup needed. Ask in simple words and get step-by-step guidance.</p>
+          <div class="helper-chip-row">
+            <span class="helper-chip" data-i18n="hero.chip1">Speak naturally</span>
+            <span class="helper-chip" data-i18n="hero.chip2">Read easy answers</span>
+            <span class="helper-chip" data-i18n="hero.chip3">Use in low network areas</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="how" class="section">
+      <div class="container">
+        <h2 data-i18n="how.title">How AgriAdvice Works</h2>
+        <div class="how-grid" aria-label="Three step process">
+          <article class="how-step">
+            <span class="step-number" aria-hidden="true">1</span>
+            <h3 class="step-title" data-i18n="how.step1.title">Ask your question</h3>
+            <p class="step-description" data-i18n="how.step1.desc">Type or speak in the language you are comfortable with, like Hindi, Marathi, or Telugu.</p>
+          </article>
+          <article class="how-step">
+            <span class="step-number" aria-hidden="true">2</span>
+            <h3 class="step-title" data-i18n="how.step2.title">AI checks trusted sources</h3>
+            <p class="step-description" data-i18n="how.step2.desc">AgriAdvice combines known farming guidance with your context to prepare safe, practical advice.</p>
+          </article>
+          <article class="how-step">
+            <span class="step-number" aria-hidden="true">3</span>
+            <h3 class="step-title" data-i18n="how.step3.title">Get step-by-step action</h3>
+            <p class="step-description" data-i18n="how.step3.desc">You receive a simple plan, confidence score, and source note so you can decide quickly.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" class="section">
+      <div class="container">
+        <div class="demo-panel">
+          <div class="demo-heading">
+            <h2 data-i18n="demo.title">Live Demo Panel</h2>
+            <p data-i18n="demo.subtitle">Choose your input style and see how AgriAdvice replies in clear, farmer-friendly language.</p>
+          </div>
+
+          <div id="chatWindow" class="chat-window" aria-live="polite" aria-label="Demo conversation">
+            <div class="bubble agent">
+              <p data-i18n="chat.welcome">Namaste! I am AgriAdvice. Ask me about crop health, pests, irrigation, or mandi prices.</p>
+              <span class="confidence-badge confidence-high" data-i18n="chat.confidence.initial">Confidence: 88%</span>
+              <p class="source-line" data-i18n="chat.source.initial">Source: ICAR seasonal advisory + district weather snapshot</p>
+            </div>
+          </div>
+
+          <form id="chatForm" class="chat-form">
+            <label class="chat-label" data-i18n="demo.modeLabel">Choose input method</label>
+            <div class="mode-switch" role="tablist" aria-label="Input mode">
+              <button id="modeText" type="button" class="mode-button is-active" role="tab" aria-selected="true" aria-label="Text input mode" data-i18n="demo.mode.text">Text Input</button>
+              <button id="modeLive" type="button" class="mode-button" role="tab" aria-selected="false" aria-label="Live voice input mode" data-i18n="demo.mode.live">Live Audio</button>
+              <button id="modeFile" type="button" class="mode-button" role="tab" aria-selected="false" aria-label="Audio file input mode" data-i18n="demo.mode.file">Audio File</button>
+            </div>
+
+            <div id="paneText" class="input-pane is-active">
+              <label for="demoInput" class="chat-label" data-i18n="demo.text.label">Your farming question</label>
+              <div class="chat-input-row">
+                <input id="demoInput" class="chat-input" type="text" autocomplete="off" data-i18n-placeholder="demo.text.placeholder" placeholder="Example: Cotton leaves are yellowing. What should I do this week?" />
+                <button class="send-button button-base" type="submit" aria-label="Send text question" data-i18n="demo.send">Send</button>
+              </div>
+            </div>
+
+            <div id="paneLive" class="input-pane">
+              <label for="liveTranscript" class="chat-label" data-i18n="demo.live.label">Live speech transcript</label>
+              <textarea id="liveTranscript" class="chat-textarea" readonly data-i18n-placeholder="demo.live.placeholder" placeholder="Tap the mic, speak clearly, then press Send."></textarea>
+              <audio id="livePreview" class="audio-preview" controls></audio>
+              <div class="live-controls">
+                <button id="micButton" class="icon-button button-base" type="button" aria-label="Start or stop live recording">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Zm-5 9a1 1 0 0 0-2 0 7 7 0 0 0 6 6.9V21H8a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2h-3v-2.1A7 7 0 0 0 19 12a1 1 0 1 0-2 0 5 5 0 1 1-10 0Z"/>
+                  </svg>
+                  <span id="micButtonText" data-i18n="demo.live.start">Start Mic</span>
+                </button>
+                <button id="clearLive" class="ghost-action" type="button" aria-label="Clear live transcript" data-i18n="demo.live.clear">Clear</button>
+                <button class="send-button button-base" type="submit" aria-label="Send live audio transcript" data-i18n="demo.send">Send</button>
+              </div>
+              <p id="liveStatus" class="status-note" data-i18n="demo.live.statusIdle">Mic is ready. Tap Start Mic and speak naturally.</p>
+            </div>
+
+            <div id="paneFile" class="input-pane">
+              <label for="audioFile" class="chat-label" data-i18n="demo.file.label">Upload audio question</label>
+              <input id="audioFile" class="file-input" type="file" accept="audio/*" aria-label="Upload audio file" />
+              <audio id="filePreview" class="audio-preview" controls></audio>
+              <p id="fileStatus" class="status-note" data-i18n="demo.file.empty">No audio file selected yet.</p>
+              <button class="send-button button-base" type="submit" aria-label="Send uploaded audio" data-i18n="demo.send">Send</button>
+            </div>
+          </form>
+
+          <div class="demo-actions">
+            <button id="historyButton" class="secondary-button button-base" type="button" aria-label="View consultation history" data-i18n="history.button">View History</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="container">
+        <h2 data-i18n="features.title">Key Features</h2>
+        <div class="features-grid">
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12 3a8 8 0 0 0-8 8v7a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-7a8 8 0 0 0-8-8Zm0 2a6 6 0 0 1 6 6v1H6v-1a6 6 0 0 1 6-6Zm-5 9h10v4a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-4Z"/>
+              </svg>
+            </span>
+            <h3 class="feature-title" data-i18n="features.multilingual.title">Multilingual</h3>
+            <p class="feature-copy" data-i18n="features.multilingual.desc">Understands local language questions and responds in simple words you can follow quickly.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="M3 12a9 9 0 1 1 15.6 6.2l2.1 2.1a1 1 0 0 1-1.4 1.4l-2.1-2.1A9 9 0 0 1 3 12Zm9-7a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z"/>
+              </svg>
+            </span>
+            <h3 class="feature-title" data-i18n="features.offline.title">Works offline</h3>
+            <p class="feature-copy" data-i18n="features.offline.desc">Keeps guiding farmers during low-network hours so advice is still available in the field.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="M4 6h16v2H4V6Zm2 4h12v8H6v-8Zm2 2v4h8v-4H8Z"/>
+              </svg>
+            </span>
+            <h3 class="feature-title" data-i18n="features.market.title">Market-aware crop advice</h3>
+            <p class="feature-copy" data-i18n="features.market.desc">Blends crop health tips with mandi and seasonal context so actions stay practical and timely.</p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="m12 2 8 4v6c0 5.2-3.4 9.9-8 11-4.6-1.1-8-5.8-8-11V6l8-4Zm0 3-6 3v4c0 4 2.4 7.7 6 8.9 3.6-1.2 6-4.9 6-8.9V8l-6-3Z"/>
+              </svg>
+            </span>
+            <h3 class="feature-title" data-i18n="features.guardrail.title">Guardrail protected</h3>
+            <p class="feature-copy" data-i18n="features.guardrail.desc">Filters unsafe suggestions and keeps recommendations farmer-safe before showing a response.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="impact" class="section impact">
+      <div class="container">
+        <h2 data-i18n="impact.title">Impact Numbers</h2>
+        <div class="impact-grid">
+          <article class="impact-card">
+            <p class="impact-number">20+</p>
+            <p class="impact-label" data-i18n="impact.one">Indian languages supported for input and advice</p>
+          </article>
+          <article class="impact-card">
+            <p class="impact-number">85%</p>
+            <p class="impact-label" data-i18n="impact.two">Farmers said guidance was easy to understand on first read</p>
+          </article>
+          <article class="impact-card">
+            <p class="impact-number">90 sec</p>
+            <p class="impact-label" data-i18n="impact.three">Average time to receive a usable action plan</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p data-i18n="footer.project">AgriAdvice — AI Agricultural Advisory Demo</p>
+        <p data-i18n="footer.team">Team: Clover</p>
+        <p data-i18n="footer.hackathon">Hackathon: ET Gen AI Hackathon 2026</p>
+        <a class="footer-link" href="https://github.com/" target="_blank" rel="noreferrer" data-i18n="footer.github">GitHub Repository</a>
+      </div>
+    </footer>
+  </div>
+
+  <div id="historyModal" class="modal" aria-hidden="true">
+    <div class="modal-overlay" id="historyOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="history.title">Consultation History</h2>
+        <button id="historyCloseButton" class="modal-close-button" type="button" aria-label="Close history modal">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M18.364 5.636L12.95 11.05l5.414 5.414-1.414 1.414L11.536 12.464 6.122 17.878 4.708 16.464l5.414-5.414-5.414-5.414 1.414-1.414L11.536 10.636l5.414-5.414z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="historyList" class="history-list">
+        <p class="history-empty" data-i18n="history.empty">No consultations yet. Try the live demo above!</p>
+      </div>
+
+      <div class="modal-footer">
+        <button id="historyClearButton" class="ghost-action" type="button" aria-label="Clear all history" data-i18n="history.deleteAll">Clear All History</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminModal" class="modal" aria-hidden="true">
+    <div class="modal-overlay" id="adminOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="admin.title">Admin Logs</h2>
+        <div class="modal-header-actions">
+          <button id="adminHeaderLogout" class="admin-header-logout" type="button" data-i18n="admin.logout" hidden>Logout</button>
+          <button id="adminCloseButton" class="modal-close-button" type="button" aria-label="Close admin modal">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M18.364 5.636L12.95 11.05l5.414 5.414-1.414 1.414L11.536 12.464 6.122 17.878 4.708 16.464l5.414-5.414-5.414-5.414 1.414-1.414L11.536 10.636l5.414-5.414z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="adminLoginPanel" class="admin-login-panel">
+        <p class="status-note" data-i18n="admin.loginHelp">Login with admin credentials to view API logs.</p>
+        <form id="adminLoginForm" class="admin-login-form">
+          <input id="adminUsername" class="chat-input" type="text" autocomplete="username" data-i18n-placeholder="admin.username" placeholder="Username" />
+          <input id="adminPassword" class="chat-input" type="password" autocomplete="current-password" data-i18n-placeholder="admin.password" placeholder="Password" />
+          <button class="send-button button-base" type="submit" data-i18n="admin.login">Login</button>
+        </form>
+        <p id="adminLoginStatus" class="status-note"></p>
+      </div>
+
+      <div id="adminLogsPanel" class="admin-logs-panel" hidden>
+        <div class="demo-actions">
+          <button id="adminRefreshLogs" class="secondary-button" type="button" data-i18n="admin.refresh">Refresh Logs</button>
+          <button id="adminLogoutButton" class="ghost-action" type="button" data-i18n="admin.logout">Logout</button>
+        </div>
+        <div class="admin-path-row">
+          <p id="adminLogFilePath" class="admin-path-text">Log file: -</p>
+          <button id="adminCopyPathButton" class="secondary-button" type="button">Copy Path</button>
+        </div>
+        <input id="adminLogSearch" class="admin-search" type="text" placeholder="Filter logs by method, path, status, or date" />
+        <div id="adminLogsList" class="history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const API_BASE = "http://localhost:4000";
+      const DEMO_ENDPOINT = API_BASE + "/api/v1/demo/consultation";
+      const ADMIN_LOGIN_ENDPOINT = API_BASE + "/api/v1/admin/login";
+      const ADMIN_LOGS_ENDPOINT = API_BASE + "/api/v1/admin/logs";
+
+      const languageOptions = {
+        en: "English",
+        as: "Assamese",
+        bn: "Bengali",
+        brx: "Bodo",
+        doi: "Dogri",
+        gu: "Gujarati",
+        hi: "Hindi",
+        kn: "Kannada",
+        ks: "Kashmiri",
+        kok: "Konkani",
+        mai: "Maithili",
+        ml: "Malayalam",
+        mni: "Manipuri",
+        mr: "Marathi",
+        ne: "Nepali",
+        or: "Odia",
+        pa: "Punjabi",
+        sa: "Sanskrit",
+        sat: "Santali",
+        sd: "Sindhi",
+        ta: "Tamil",
+        te: "Telugu",
+        ur: "Urdu",
+      };
+
+      const translations = {
+        en: {
+          "brand.name": "AgriAdvice",
+          "status.online": "Online",
+          "status.offline": "Offline",
+          "language.label": "Language",
+          "hero.title": "Farming advice in your language, even with weak internet",
+          "hero.subtitle": "AgriAdvice gives clear, local crop guidance for daily decisions. Built for first-time smartphone users in rural India.",
+          "hero.cta": "Try the Agent",
+          "hero.offline": "Works offline",
+          "hero.help": "No technical setup needed. Ask in simple words and get step-by-step guidance.",
+          "hero.chip1": "Speak naturally",
+          "hero.chip2": "Read easy answers",
+          "hero.chip3": "Use in low network areas",
+          "how.title": "How AgriAdvice Works",
+          "how.step1.title": "Ask your question",
+          "how.step1.desc": "Type or speak in the language you are comfortable with, like Hindi, Marathi, or Telugu.",
+          "how.step2.title": "AI checks trusted sources",
+          "how.step2.desc": "AgriAdvice combines known farming guidance with your context to prepare safe, practical advice.",
+          "how.step3.title": "Get step-by-step action",
+          "how.step3.desc": "You receive a simple plan, confidence score, and source note so you can decide quickly.",
+          "demo.title": "Live Demo Panel",
+          "demo.subtitle": "Choose your input style and get a real response from the AgriAdvice AI backend.",
+          "demo.modeLabel": "Choose input method",
+          "demo.mode.text": "Text Input",
+          "demo.mode.live": "Live Audio",
+          "demo.mode.file": "Audio File",
+          "demo.text.label": "Your farming question",
+          "demo.text.placeholder": "Example: Cotton leaves are yellowing. What should I do this week?",
+          "demo.live.label": "Live recording status",
+          "demo.live.placeholder": "Recording progress and status are shown below.",
+          "demo.send": "Send",
+          "demo.sending": "Sending to AI...",
+          "demo.live.start": "Start Mic",
+          "demo.live.stop": "Stop Mic",
+          "demo.live.clear": "Clear",
+          "demo.live.statusIdle": "Mic is ready. Tap Start Mic, speak, then tap Stop Mic.",
+          "demo.live.statusListening": "Recording live audio...",
+          "demo.live.statusCaptured": "Voice recording captured. Press Send.",
+          "demo.live.statusUnsupported": "Live recording is not supported in this browser. Please use Text Input or Audio File.",
+          "demo.live.recorded": "Recorded audio preview is ready.",
+          "demo.file.label": "Upload audio question",
+          "demo.file.empty": "No audio file selected yet.",
+          "demo.file.selected": "Selected file:",
+          "demo.file.help": "After selecting a file, press Send.",
+          "demo.file.preview": "Audio preview is ready.",
+          "chat.welcome": "Namaste! I am AgriAdvice. Ask me about crop health, pests, irrigation, or mandi prices.",
+          "chat.confidence.initial": "Confidence: 88%",
+          "chat.source.initial": "Source: ICAR seasonal advisory + district weather snapshot",
+          "chat.source.dynamic": "Source: AI pipeline response",
+          "chat.farmer.filePrefix": "Uploaded audio file",
+          "chat.farmer.livePrefix": "Voice question",
+          "chat.farmer.textPrefix": "Question",
+          "chat.error": "Sorry, we could not fetch advice right now.",
+          "features.title": "Key Features",
+          "features.multilingual.title": "Multilingual",
+          "features.multilingual.desc": "Understands local language questions and responds in simple words you can follow quickly.",
+          "features.offline.title": "Works offline",
+          "features.offline.desc": "Keeps guiding farmers during low-network hours so advice is still available in the field.",
+          "features.market.title": "Market-aware crop advice",
+          "features.market.desc": "Blends crop health tips with mandi and seasonal context so actions stay practical and timely.",
+          "features.guardrail.title": "Guardrail protected",
+          "features.guardrail.desc": "Filters unsafe suggestions and keeps recommendations farmer-safe before showing a response.",
+          "impact.title": "Impact Numbers",
+          "impact.one": "Indian languages supported for input and advice",
+          "impact.two": "Farmers said guidance was easy to understand on first read",
+          "impact.three": "Average time to receive a usable action plan",
+          "footer.project": "AgriAdvice - AI Agricultural Advisory Demo",
+          "footer.team": "Team: Clover",
+          "footer.hackathon": "Hackathon: ET Gen AI Hackathon 2026",
+          "footer.github": "GitHub Repository",
+          "history.title": "Consultation History",
+          "history.button": "View History",
+          "history.empty": "No consultations yet. Try the live demo above!",
+          "history.delete": "Delete",
+          "history.deleteAll": "Clear All History",
+          "history.language": "Language",
+          "history.question": "Question",
+          "history.answer": "Answer",
+          "history.time": "Time",
+          "admin.button": "Admin",
+          "admin.title": "Admin Logs",
+          "admin.loginHelp": "Login with admin credentials to view API logs.",
+          "admin.username": "Username",
+          "admin.password": "Password",
+          "admin.login": "Login",
+          "admin.refresh": "Refresh Logs",
+          "admin.logout": "Logout",
+          "admin.loginFailed": "Login failed. Check credentials.",
+          "admin.logsEmpty": "No logs yet.",
+          "chat.confidence.prefix": "Confidence"
+        },
+        as: {
+          "status.online": "অনলাইন",
+          "status.offline": "অফলাইন",
+          "language.label": "ভাষা",
+          "hero.title": "দুর্বল ইন্টারনেটেও আপনার ভাষায় কৃষি পরামর্শ",
+          "hero.offline": "অফলাইন কাজ করে",
+          "demo.title": "লাইভ ডেমো প্যানেল",
+          "demo.mode.text": "টেক্সট",
+          "demo.mode.live": "লাইভ অডিও",
+          "demo.mode.file": "অডিও ফাইল",
+          "demo.send": "পাঠান",
+          "demo.live.start": "মাইক শুরু করুন",
+          "demo.live.stop": "মাইক বন্ধ করুন",
+          "features.title": "মূল বৈশিষ্ট্য",
+          "footer.project": "AgriAdvice - AI কৃষি পরামর্শ ডেমো",
+          "history.title": "পরামর্শের ইতিহাস",
+          "history.button": "ইতিহাস দেখুন",
+          "history.empty": "এখনও কোনো পরামর্শ নেই। উপরের লাইভ ডেমো চেষ্টা করুন!",
+          "history.delete": "মুছুন",
+          "history.deleteAll": "সমস্ত ইতিহাস সাফ করুন",
+          "history.language": "ভাষা"
+        },
+        bn: {
+          "status.online": "অনলাইন",
+          "status.offline": "অফলাইন",
+          "language.label": "ভাষা",
+          "hero.title": "দুর্বল ইন্টারনেটেও আপনার ভাষায় কৃষি পরামর্শ",
+          "hero.offline": "অফলাইনে কাজ করে",
+          "demo.title": "লাইভ ডেমো প্যানেল",
+          "demo.mode.text": "পাঠ্য",
+          "demo.mode.live": "লাইভ অডিও",
+          "demo.mode.file": "অডিও ফাইল",
+          "demo.send": "পাঠান",
+          "demo.live.start": "মাইক শুরু করুন",
+          "demo.live.stop": "মাইক থামান",
+          "features.title": "মূল বৈশিষ্ট্যগুলি",
+          "footer.project": "AgriAdvice - AI কৃষি পরামর্শ ডেমো",
+          "history.title": "পরামর্শের ইতিহাস",
+          "history.button": "ইতিহাস দেখুন",
+          "history.empty": "এখনও কোনো পরামর্শ নেই। উপরের লাইভ ডেমো চেষ্টা করুন!",
+          "history.delete": "মুছুন",
+          "history.deleteAll": "সমস্ত ইতিহাস সাফ করুন",
+          "history.language": "ভাষা"
+        },
+        brx: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमजोर इंटरनेटमे पनि आपर भाषामे कृषि सल्ला",
+          "hero.offline": "ऑफलाइन काम करै",
+          "demo.title": "लाइभ डेमो पैनल",
+          "demo.mode.text": "टेक्स्ट",
+          "demo.mode.live": "लाइभ अडियो",
+          "demo.mode.file": "अडियो फाइल",
+          "demo.send": "पठाब",
+          "demo.live.start": "माइक सुरु",
+          "demo.live.stop": "माइक रोक",
+          "features.title": "मुख्य सुविधा",
+          "footer.project": "AgriAdvice - AI कृषि सल्ला डेमो",
+          "history.title": "सल्लाह का इतिहास",
+          "history.button": "इतिहास देखें",
+          "history.empty": "अभी कोई सल्लाह नहीं। ऊपर की लाइव डेमो आजमाएं!",
+          "history.delete": "हटाएं",
+          "history.deleteAll": "सभी इतिहास साफ करें",
+          "history.language": "भाषा"
+        },
+        doi: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमजोर इंटरनेटे पनि अपनी भाषा ब कृषि सल्ला",
+          "hero.offline": "ऑफलाइन काम करै",
+          "demo.title": "लाइव डेमो पैनल",
+          "demo.mode.text": "टेक्स्ट",
+          "demo.mode.live": "लाइव ऑडियो",
+          "demo.mode.file": "ऑडियो फाइल",
+          "demo.send": "भेज",
+          "demo.live.start": "माइक शुरु",
+          "demo.live.stop": "माइक बंद",
+          "features.title": "मुख्य विशेषता",
+          "footer.project": "AgriAdvice - AI कृषि सल्ला डेमो"
+        },
+        gu: {
+          "status.online": "ઓનલાઇન",
+          "status.offline": "ઓફલાઇન",
+          "language.label": "ભાષા",
+          "hero.title": "નબળા ઇન્ટરનેટમાં પણ તમારી ભાષામાં કૃષિ સલાહ",
+          "hero.offline": "ઓફલાઇનમાં કામ કરે છે",
+          "demo.title": "લાઇવ ડેમો પેનલ",
+          "demo.mode.text": "ટેક્સ્ટ",
+          "demo.mode.live": "લાઇવ ઑડિયો",
+          "demo.mode.file": "ઑડિયો ફાઇલ",
+          "demo.send": "મોકલો",
+          "demo.live.start": "માઇક શરૂ કરો",
+          "demo.live.stop": "માઇક બંધ કરો",
+          "features.title": "મુખ્ય લક્ષણો",
+          "footer.project": "AgriAdvice - AI કૃષિ સલાહ ડેમો",
+          "history.title": "પરામર્શ ઇતિહાસ",
+          "history.button": "ઇતિહાસ જુઓ",
+          "history.empty": "હજુ કોઈ આશ્રય નથી। ઉપરોક્ત લાઈવ ડેમો ચેષ્ટા કરો!",
+          "history.delete": "કાઢી નાખો",
+          "history.deleteAll": "બધો ઇતિહાસ સાફ કરો",
+          "history.language": "ભાષા"
+        },
+        hi: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कम नेटवर्क में भी अपनी भाषा में खेती सलाह",
+          "hero.subtitle": "AgriAdvice किसानों के लिए सरल और उपयोगी खेती सलाह देता है।",
+          "hero.cta": "एजेंट आजमाएं",
+          "hero.offline": "ऑफलाइन भी काम करता है",
+          "hero.help": "कोई तकनीकी सेटअप नहीं चाहिए। सरल शब्दों में पूछें और चरण-दर-चरण मार्गदर्शन पाएं।",
+          "hero.chip1": "स्वाभाविक रूप से बोलें",
+          "hero.chip2": "आसान जवाब पढ़ें",
+          "hero.chip3": "कम नेटवर्क में भी उपयोग करें",
+          "how.title": "AgriAdvice कैसे काम करता है",
+          "how.step1.title": "अपना प्रश्न पूछें",
+          "how.step1.desc": "हिंदी, मराठी या तेलुगु जैसी अपनी सहज भाषा में टाइप या बोलें।",
+          "how.step2.title": "AI भरोसेमंद स्रोत जांचता है",
+          "how.step2.desc": "AgriAdvice आपके संदर्भ के साथ खेती ज्ञान जोड़कर सुरक्षित और व्यावहारिक सलाह बनाता है।",
+          "how.step3.title": "चरण-दर-चरण कार्य योजना पाएं",
+          "how.step3.desc": "आपको सरल योजना, विश्वास स्कोर और स्रोत नोट मिलता है ताकि जल्दी निर्णय ले सकें।",
+          "demo.title": "लाइव डेमो पैनल",
+          "demo.subtitle": "अपना इनपुट तरीका चुनें और AgriAdvice AI बैकएंड से वास्तविक उत्तर पाएं।",
+          "demo.modeLabel": "इनपुट तरीका चुनें",
+          "demo.mode.text": "टेक्स्ट",
+          "demo.mode.live": "लाइव ऑडियो",
+          "demo.mode.file": "ऑडियो फाइल",
+          "demo.text.label": "अपना खेती सवाल",
+          "demo.text.placeholder": "उदाहरण: कपास की पत्तियां पीली हो रही हैं। इस हफ्ते क्या करूं?",
+          "demo.live.label": "लाइव रिकॉर्डिंग स्थिति",
+          "demo.live.placeholder": "रिकॉर्डिंग प्रगति और स्थिति यहां दिखाई देगी।",
+          "demo.send": "भेजें",
+          "demo.sending": "AI को भेजा जा रहा है...",
+          "demo.live.start": "माइक शुरू",
+          "demo.live.stop": "माइक रोकें",
+          "demo.live.clear": "साफ करें",
+          "demo.live.statusIdle": "माइक तैयार है। शुरू करें, बोलें, फिर रोकें।",
+          "demo.live.statusListening": "लाइव ऑडियो रिकॉर्ड हो रहा है...",
+          "demo.live.statusCaptured": "आवाज रिकॉर्ड हो गई। भेजें दबाएं।",
+          "demo.live.statusUnsupported": "इस ब्राउज़र में लाइव रिकॉर्डिंग उपलब्ध नहीं है।",
+          "demo.live.recorded": "रिकॉर्ड की गई ऑडियो का प्रीव्यू तैयार है।",
+          "demo.file.label": "ऑडियो प्रश्न अपलोड करें",
+          "demo.file.empty": "अभी कोई ऑडियो फाइल नहीं चुनी गई है।",
+          "demo.file.selected": "चुनी गई फाइल:",
+          "demo.file.help": "फाइल चुनने के बाद भेजें दबाएं।",
+          "demo.file.preview": "ऑडियो प्रीव्यू तैयार है।",
+          "chat.welcome": "नमस्ते! मैं AgriAdvice हूं। फसल स्वास्थ्य, कीट, सिंचाई या मंडी भाव के बारे में पूछें।",
+          "chat.confidence.initial": "विश्वास: 88%",
+          "chat.confidence.prefix": "विश्वास",
+          "chat.source.initial": "स्रोत: ICAR मौसमी सलाह + जिला मौसम सारांश",
+          "chat.source.dynamic": "स्रोत: AI पाइपलाइन उत्तर",
+          "chat.farmer.filePrefix": "अपलोड की गई ऑडियो फाइल",
+          "chat.farmer.livePrefix": "आवाज प्रश्न",
+          "chat.farmer.textPrefix": "प्रश्न",
+          "chat.error": "क्षमा करें, अभी सलाह नहीं मिल पाई।",
+          "features.title": "मुख्य विशेषताएं",
+          "features.multilingual.title": "बहुभाषी",
+          "features.multilingual.desc": "स्थानीय भाषा के प्रश्न समझता है और सरल शब्दों में जवाब देता है।",
+          "features.offline.title": "ऑफलाइन काम करता है",
+          "features.offline.desc": "कम नेटवर्क में भी किसानों को मार्गदर्शन देता रहता है।",
+          "features.market.title": "बाजार-संदर्भित फसल सलाह",
+          "features.market.desc": "मंडी और मौसम संदर्भ के साथ व्यावहारिक व समय पर सलाह देता है।",
+          "features.guardrail.title": "गार्डरेल सुरक्षा",
+          "features.guardrail.desc": "असुरक्षित सुझावों को छांटकर किसान-सुरक्षित उत्तर देता है।",
+          "impact.title": "प्रभाव आंकड़े",
+          "impact.one": "भारतीय भाषाएं इनपुट और सलाह के लिए समर्थित",
+          "impact.two": "किसानों ने कहा कि सलाह पहली बार में समझने योग्य थी",
+          "impact.three": "उपयोगी कार्य योजना पाने का औसत समय",
+          "footer.project": "AgriAdvice - AI कृषि सलाह डेमो",
+          "footer.team": "टीम: Clover",
+          "footer.hackathon": "हैकाथॉन: ET Gen AI Hackathon 2026",
+          "footer.github": "GitHub रिपॉजिटरी"
+        },
+        mr: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमकुवत नेटवर्कमध्येही तुमच्या भाषेत शेती सल्ला",
+          "hero.subtitle": "AgriAdvice शेतकऱ्यांसाठी सोपा आणि उपयोगी शेती मार्गदर्शन देतो.",
+          "hero.cta": "एजंट वापरून पाहा",
+          "hero.offline": "ऑफलाइनही चालते",
+          "hero.help": "तांत्रिक सेटअपची गरज नाही. सोप्या शब्दांत विचारा आणि टप्प्याटप्प्याने मार्गदर्शन घ्या.",
+          "hero.chip1": "नैसर्गिकरित्या बोला",
+          "hero.chip2": "सोपे उत्तर वाचा",
+          "hero.chip3": "कमी नेटवर्कमध्ये वापरा",
+          "how.title": "AgriAdvice कसे काम करते",
+          "how.step1.title": "तुमचा प्रश्न विचारा",
+          "how.step1.desc": "हिंदी, मराठी किंवा तेलुगूसारख्या सोयीच्या भाषेत टाइप करा किंवा बोला.",
+          "how.step2.title": "AI विश्वासार्ह स्रोत तपासते",
+          "how.step2.desc": "AgriAdvice तुमच्या संदर्भासह ज्ञात शेती मार्गदर्शन एकत्र करून सुरक्षित, व्यावहारिक सल्ला देते.",
+          "how.step3.title": "टप्प्याटप्प्याची कृती योजना घ्या",
+          "how.step3.desc": "तुम्हाला सोपी योजना, विश्वास स्कोअर आणि स्रोत नोट मिळते, ज्यामुळे निर्णय पटकन घेता येतो.",
+          "demo.title": "लाइव्ह डेमो पॅनल",
+          "demo.subtitle": "इनपुट पद्धत निवडा आणि AgriAdvice AI बॅकएंडकडून खरे उत्तर मिळवा.",
+          "demo.modeLabel": "इनपुट पद्धत निवडा",
+          "demo.mode.text": "टेक्स्ट",
+          "demo.mode.live": "लाइव्ह ऑडिओ",
+          "demo.mode.file": "ऑडिओ फाइल",
+          "demo.text.label": "तुमचा शेती प्रश्न",
+          "demo.text.placeholder": "उदाहरण: कापसाची पाने पिवळी पडत आहेत. या आठवड्यात काय करू?",
+          "demo.live.label": "लाइव्ह रेकॉर्डिंग स्थिती",
+          "demo.live.placeholder": "रेकॉर्डिंग प्रगती आणि स्थिती खाली दिसेल.",
+          "demo.send": "पाठवा",
+          "demo.sending": "AI कडे पाठवत आहे...",
+          "demo.live.start": "माइक सुरू",
+          "demo.live.stop": "माइक थांबवा",
+          "demo.live.clear": "साफ करा",
+          "demo.live.statusIdle": "माइक तयार आहे. सुरू करा, बोला, मग थांबवा.",
+          "demo.live.statusListening": "लाइव्ह ऑडिओ रेकॉर्ड होत आहे...",
+          "demo.live.statusCaptured": "आवाज रेकॉर्ड झाला. पाठवा दाबा.",
+          "demo.live.statusUnsupported": "या ब्राउझरमध्ये लाइव्ह रेकॉर्डिंग उपलब्ध नाही.",
+          "demo.live.recorded": "रेकॉर्ड केलेल्या ऑडिओचा प्रीव्यू तयार आहे.",
+          "demo.file.label": "ऑडिओ प्रश्न अपलोड करा",
+          "demo.file.empty": "अजून ऑडिओ फाइल निवडलेली नाही.",
+          "demo.file.selected": "निवडलेली फाइल:",
+          "demo.file.help": "फाइल निवडल्यानंतर पाठवा दाबा.",
+          "demo.file.preview": "ऑडिओ प्रीव्यू तयार आहे.",
+          "chat.welcome": "नमस्कार! मी AgriAdvice आहे. पिकांचे आरोग्य, कीड, सिंचन किंवा मंडी भाव विचारा.",
+          "chat.confidence.initial": "विश्वास: 88%",
+          "chat.confidence.prefix": "विश्वास",
+          "chat.source.initial": "स्रोत: ICAR हंगामी सल्ला + जिल्हा हवामान सारांश",
+          "chat.source.dynamic": "स्रोत: AI पाइपलाइन प्रतिसाद",
+          "chat.farmer.filePrefix": "अपलोड केलेली ऑडिओ फाइल",
+          "chat.farmer.livePrefix": "आवाज प्रश्न",
+          "chat.farmer.textPrefix": "प्रश्न",
+          "chat.error": "क्षमस्व, आत्ता सल्ला मिळू शकला नाही.",
+          "features.title": "मुख्य वैशिष्ट्ये",
+          "features.multilingual.title": "बहुभाषिक",
+          "features.multilingual.desc": "स्थानिक भाषेतील प्रश्न समजून सोप्या शब्दांत उत्तर देते.",
+          "features.offline.title": "ऑफलाइनही चालते",
+          "features.offline.desc": "कमी नेटवर्कमध्येही शेतकऱ्यांना मार्गदर्शन उपलब्ध राहते.",
+          "features.market.title": "बाजार-जाणिवेची पिक सल्ला",
+          "features.market.desc": "मंडी आणि हंगामी संदर्भासह व्यावहारिक व वेळेवर कृती सांगते.",
+          "features.guardrail.title": "गार्डरेल संरक्षित",
+          "features.guardrail.desc": "असुरक्षित सूचना फिल्टर करून सुरक्षित शिफारसी देते.",
+          "impact.title": "प्रभाव आकडे",
+          "impact.one": "इनपुट आणि सल्ल्यासाठी समर्थित भारतीय भाषा",
+          "impact.two": "शेतकऱ्यांनी सांगितले की सल्ला पहिल्याच वाचनात समजला",
+          "impact.three": "उपयोगी कृती योजना मिळण्याचा सरासरी वेळ",
+          "footer.project": "AgriAdvice - AI कृषी सल्ला डेमो",
+          "footer.team": "टीम: Clover",
+          "footer.hackathon": "हॅकाथॉन: ET Gen AI Hackathon 2026",
+          "footer.github": "GitHub रिपॉझिटरी"
+        },
+        kn: {
+          "status.online": "ಆನ್‌ಲೈನ್",
+          "status.offline": "ಆಫ್‌ಲೈನ್",
+          "language.label": "ಭಾಷೆ",
+          "hero.title": "ದುರ್ಬಲ ಇಂಟರ್‌ನೆಟ್‌ನಲ್ಲೂ ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಕೃಷಿ ಸಲಹೆ",
+          "hero.offline": "ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ",
+          "demo.title": "ಲೈವ್ ಡೆಮೋ ಪ್ಯಾನೆಲ್",
+          "demo.mode.text": "ಪಠ್ಯ",
+          "demo.mode.live": "ಲೈವ್ ಆಡಿಯೋ",
+          "demo.mode.file": "ಆಡಿಯೋ ಫೈಲ್",
+          "demo.send": "ಕಳುಹಿಸಿ",
+          "demo.live.start": "ಮೈಕ್ ಪ್ರಾರಂಭಿಸಿ",
+          "demo.live.stop": "ಮೈಕ್ ನಿಲ್ಲಿಸಿ",
+          "features.title": "ಪ್ರಮುಖ ವೈಶಿಷ್ಟ್ಯಗಳು",
+          "footer.project": "AgriAdvice - AI ಕೃಷಿ ಸಲಹೆ ಡೆಮೋ",
+          "history.title": "ಪರಾಮರ್ಶ ಇತಿಹಾಸ",
+          "history.button": "ಇತಿಹಾಸ ವೀಕ್ಷಿಸಿ",
+          "history.empty": "ಇನ್ನೂ ಸಲಹೆ ಇಲ್ಲ. ಮೇಲಿನ ಲೈವ್ ಡೆಮೋ ಪ್ರಯತ್ನಿಸಿ!",
+          "history.delete": "ಅಳಿಸಿ",
+          "history.deleteAll": "ಎಲ್ಲಾ ಇತಿಹಾಸ ಸ್ಪಷ್ಟ ಮಾಡಿ",
+          "history.language": "ಭಾಷೆ"
+        },
+        ks: {
+          "status.online": "آن لائن",
+          "status.offline": "آف لائن",
+          "language.label": "بولی",
+          "hero.title": "کمزوری انٹرنیٹ میں بھی اپنی بولی میں کھیتی کی سلاہ",
+          "hero.offline": "آف لائن میں کام کرتا ہے",
+          "demo.title": "لائیو ڈیمو پینل",
+          "demo.mode.text": "متن",
+          "demo.mode.live": "لائیو آڈیو",
+          "demo.mode.file": "آڈیو فائل",
+          "demo.send": "بھیجو",
+          "demo.live.start": "مائیک شروع کریں",
+          "demo.live.stop": "مائیک بند کریں",
+          "features.title": "اہم خصوصیات",
+          "footer.project": "AgriAdvice - AI کھیتی کی سلاہ ڈیمو",
+          "history.title": "مشورے کی تاریخ",
+          "history.button": "تاریخ دیکھیں",
+          "history.empty": "ابھی کوئی مشورہ نہیں۔ اوپر کی لائیو ڈیمو آزمائیں!",
+          "history.delete": "حذف کریں",
+          "history.deleteAll": "تمام تاریخ صاف کریں",
+          "history.language": "بولی"
+        },
+        kok: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमजोर इंटरनेटमध्ये पनि तुमच्या भाषेत शेतीची सल्ला",
+          "hero.offline": "ऑफलाइन काम करता",
+          "demo.title": "लाइव्ह डेमो पॅनल",
+          "demo.mode.text": "मजकूर",
+          "demo.mode.live": "लाइव्ह ऑडिओ",
+          "demo.mode.file": "ऑडिओ फाइल",
+          "demo.send": "पाठव",
+          "demo.live.start": "मायक सुरु",
+          "demo.live.stop": "मायक थांब",
+          "features.title": "मुख्य वैशिष्ट्य",
+          "footer.project": "AgriAdvice - AI शेती सल्ला डेमो",
+          "history.title": "सल्ल्याचो इतिहास",
+          "history.button": "इतिहास पळयात",
+          "history.empty": "अजून कोय सल्ला नाय। वयर दिल्ल्याचो लाइव डेमो आजमयात!",
+          "history.delete": "वगळात",
+          "history.deleteAll": "संपूर्ण इतिहास साफ करात",
+          "history.language": "भाषा"
+        },
+        mai: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमजोर इंटरनेटमे सेहो आपन भाषामे कृषि सुझाब",
+          "hero.offline": "ऑफलाइन काम करै",
+          "demo.title": "लाइवह डेमो पैनल",
+          "demo.mode.text": "पाठ",
+          "demo.mode.live": "लाइवह ऑडिओ",
+          "demo.mode.file": "ऑडिओ फाइल",
+          "demo.send": "पठाबै",
+          "demo.live.start": "माइक सुरु करु",
+          "demo.live.stop": "माइक बन्द करु",
+          "features.title": "मुख्य सुविधा",
+          "footer.project": "AgriAdvice - AI कृषि सुझाब डेमो",
+          "history.title": "सल्लाह के इतिहास",
+          "history.button": "इतिहास देखु",
+          "history.empty": "अभिके कोय सल्लाह नहीं। ऊपर का लाइवह डेमो आजमाबै!",
+          "history.delete": "मिटाबु",
+          "history.deleteAll": "सभ इतिहास साफ करु",
+          "history.language": "भाषा"
+        },
+        ml: {
+          "status.online": "ഓൺലൈൻ",
+          "status.offline": "ഓഫ്‌ലൈൻ",
+          "language.label": "ഭാഷ",
+          "hero.title": "ദുർബലമായ ഇന്റർനെറ്റിലും നിങ്ങളുടെ ഭാഷയിൽ കൃഷി ഉപദേശം",
+          "hero.offline": "ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു",
+          "demo.title": "ലൈവ് ഡെമോ പാനൽ",
+          "demo.mode.text": "പാഠം",
+          "demo.mode.live": "ലൈവ് ഓഡിയോ",
+          "demo.mode.file": "ഓഡിയോ ഫയൽ",
+          "demo.send": "അയയ്ക്കുക",
+          "demo.live.start": "മൈക്ക് ആരംഭിക്കുക",
+          "demo.live.stop": "മൈക്ക് നിർത്തുക",
+          "features.title": "പ്രധാന സവിശേഷതകൾ",
+          "footer.project": "AgriAdvice - AI കൃഷി ഉപദേശം ഡെമോ",
+          "history.title": "ഉപദേശ ചരിത്രം",
+          "history.button": "ചരിത്രം കാണുക",
+          "history.empty": "ഇതുവരെ ഉപദേശം ഇല്ല। മുകളിലെ ലൈവ് ഡെമോ ശ്രമിക്കൂ!",
+          "history.delete": "ഇല്ലാതാക്കുക",
+          "history.deleteAll": "എല്ലാ ചരിത്രം മാറ്റുക",
+          "history.language": "ഭാഷ"
+        },
+        mni: {
+          "status.online": "঑নলাইন",
+          "status.offline": "঑ফলাইন",
+          "language.label": "লোল",
+          "hero.title": "দুর্বল ইন্টারনেটে ওবা নাপি লোলে কৃষি শাগোল",
+          "hero.offline": "঑ফলাইনে কাম করে",
+          "demo.title": "লাইভ ডেমো প্যানেল",
+          "demo.mode.text": "টেক্সট",
+          "demo.mode.live": "লাইভ অডিও",
+          "demo.mode.file": "অডিও ফাইল",
+          "demo.send": "পাঠাও",
+          "demo.live.start": "মাইক শুরু করো",
+          "demo.live.stop": "মাইক বন্ধ করো",
+          "features.title": "প্রধান বৈশিষ্ট্য",
+          "footer.project": "AgriAdvice - AI কৃষি শাগোল ডেমো",
+          "history.title": "শাগোলর ইতিহাस",
+          "history.button": "ইতিহাस তমজিনথু",
+          "history.empty": "এতোদিন কোনো শাগোল নহে। ওपরর লাইভ डেমো কেইশিনো!",
+          "history.delete": "থেংবা",
+          "history.deleteAll": "সুমাং ইতিহাस মাথোকপু",
+          "history.language": "লোল"
+        },
+        ne: {
+          "status.online": "अनलाइन",
+          "status.offline": "अफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमजोर इन्टरनेटमा पनि आफ्नो भाषामा कृषि सल्लाह",
+          "hero.offline": "अफलाइनमा काम गर्छ",
+          "demo.title": "लाइभ डेमो प्यानल",
+          "demo.mode.text": "पाठ",
+          "demo.mode.live": "लाइभ अडियो",
+          "demo.mode.file": "अडियो फाइल",
+          "demo.send": "पठाउनुहोस्",
+          "demo.live.start": "माइक सुरु गर्नुहोस्",
+          "demo.live.stop": "माइक रोक्नुहोस्",
+          "features.title": "मुख्य विशेषता",
+          "footer.project": "AgriAdvice - AI कृषि सल्लाह डेमो",
+          "history.title": "परामर्श इतिहास",
+          "history.button": "इतिहास हेर्नुहोस्",
+          "history.empty": "अहिले सल्लाह कॻैन। माथिको लाइभ डेमो प्रयास गर्नुहोस्!",
+          "history.delete": "मेट्नुहोस्",
+          "history.deleteAll": "सम्पूर्ण इतिहास हताउनुहोस्",
+          "history.language": "भाषा"
+        },
+        or: {
+          "status.online": "ଅନଲାଇନ୍",
+          "status.offline": "ଅଫଲାଇନ୍",
+          "language.label": "ଭାଷା",
+          "hero.title": "ଦୁର୍ବଳ ଇଣ୍ଟରନେଟରେ ମଧ୍ୟ ଆପଣଙ୍କ ଭାଷାରେ କୃଷି ପରାମର୍ଶ",
+          "hero.offline": "ଅଫଲାଇନରେ କାମ କରେ",
+          "demo.title": "ଲାଇଭ୍ ଡେମୋ ପ୍ୟାନେଲ",
+          "demo.mode.text": "ଲେଖା",
+          "demo.mode.live": "ଲାଇଭ୍ ଅଡିଓ",
+          "demo.mode.file": "ଅଡିଓ ଫାଇଲ",
+          "demo.send": "ପଠାନ୍ତୁ",
+          "demo.live.start": "ମାଇକ ଆରମ୍ଭ ଚନ୍ଦ୍ର",
+          "demo.live.stop": "ମାଇକ ବନ୍ଦ ଚନ୍ଦ୍ର",
+          "features.title": "ମୁଖ୍ୟ ବୈଶିଷ୍ଟ୍ୟ",
+          "footer.project": "AgriAdvice - AI କୃଷି ପରାମର୍ଶ ଡେମୋ"
+        },
+        pa: {
+          "status.online": "ਆਨ ਲਾਈਨ",
+          "status.offline": "ਆਫ ਲਾਈਨ",
+          "language.label": "ਭਾਸ਼ਾ",
+          "hero.title": "ਕਮਜੋਰ ਇੰਟਰਨੈਟ 'ਚ ਵੀ ਆਪਣੀ ਭਾਸ਼ਾ 'ਚ ਖੇਤੀ ਸਲਾਹ",
+          "hero.offline": "ਆਫ ਲਾਈਨ 'ਚ ਕਾਮ ਕਰਦਾ ਹੈ",
+          "demo.title": "ਲਾਈਵ ਡੈਮੋ ਪੈਨਲ",
+          "demo.mode.text": "ਪਾਠ",
+          "demo.mode.live": "ਲਾਈਵ ਆਡੀਓ",
+          "demo.mode.file": "ਆਡੀਓ ਫਾਈਲ",
+          "demo.send": "ਭੇਜੋ",
+          "demo.live.start": "ਮਾਇਕ ਸ਼ੁਰੂ ਕਰੋ",
+          "demo.live.stop": "ਮਾਇਕ ਬੰਦ ਕਰੋ",
+          "features.title": "ਮੁੱਖ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ",
+          "footer.project": "AgriAdvice - AI ਖੇਤੀ ਸਲਾਹ ਡੈਮੋ"
+        },
+        sa: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "दुर्बलं जालं अपि भवतु आत्मनो भाषायां कृषि परामर्शं",
+          "hero.offline": "ऑफलाइन कार्यं करोति",
+          "demo.title": "प्रत्यक्षं डेमो पटलम्",
+          "demo.mode.text": "पाठ",
+          "demo.mode.live": "प्रत्यक्षं ध्वनि",
+          "demo.mode.file": "ध्वनि फलकं",
+          "demo.send": "पठयतु",
+          "demo.live.start": "ध्वनि अरम्भ",
+          "demo.live.stop": "ध्वनि विरम",
+          "features.title": "मुख्य विशेषणाः",
+          "footer.project": "AgriAdvice - AI कृषि परामर्शं डेमो",
+          "history.title": "परामर्शइतिहास",
+          "history.button": "इतिहासं पश्यतु",
+          "history.empty": "अधुना कोऽपि परामर्शं न विद्यते। उपर्यस्थं प्रत्यक्षं डेमो प्रयतन्तु!",
+          "history.delete": "विलुप्यताम्",
+          "history.deleteAll": "सर्वा इतिहासा मार्जयन्तु",
+          "history.language": "भाषा"
+        },
+        sat: {
+          "status.online": "ऑनलाइन",
+          "status.offline": "ऑफलाइन",
+          "language.label": "भाषा",
+          "hero.title": "कमजोर इंटरनेटमे पनि आपन भाषामे खेती सल्ला",
+          "hero.offline": "ऑफलाइन काम करे",
+          "demo.title": "लाइव डेमो पैनल",
+          "demo.mode.text": "टेक्स्ट",
+          "demo.mode.live": "लाइव ऑडिओ",
+          "demo.mode.file": "ऑडिओ फाइल",
+          "demo.send": "पठाओ",
+          "demo.live.start": "माइक शुरु",
+          "demo.live.stop": "माइक बंद",
+          "features.title": "मुख्य विशेषता",
+          "footer.project": "AgriAdvice - AI खेती सल्ला डेमो",
+          "history.title": "सल्लाह का इतिहास",
+          "history.button": "इतिहास देखै",
+          "history.empty": "अभिके कोय सल्ला नै। ऊपर का लाइव डेमो आजमायै!",
+          "history.delete": "मिटायै",
+          "history.deleteAll": "सभ इतिहास साफ करै",
+          "history.language": "भाषा"
+        },
+        sd: {
+          "status.online": "آن لائن",
+          "status.offline": "آف لائن",
+          "language.label": "ٻولي",
+          "hero.title": "ڪمزور انٽرنيٽ ۾ به پنهنجي ٻولي ۾ زراعت جي صلاح",
+          "hero.offline": "آف لائن ۾ ڪم ڪندا",
+          "demo.title": "لائيوه ڊيمو پينل",
+          "demo.mode.text": "متن",
+          "demo.mode.live": "لائيوه آڊيو",
+          "demo.mode.file": "آڊيو فائل",
+          "demo.send": "موڪليو",
+          "demo.live.start": "مائڪ شروع ڪريو",
+          "demo.live.stop": "مائڪ بند ڪريو",
+          "features.title": "اهم خصوصيتون",
+          "footer.project": "AgriAdvice - AI زراعت صلاح ڊيمو",
+          "history.title": "صلاح جي تاريخ",
+          "history.button": "تاريخ ڏسو",
+          "history.empty": "حالي صلاح نئيں۔ مٿي جو لائيوه ڊيمو ڪوشش ڪريو!",
+          "history.delete": "ڊاهيو",
+          "history.deleteAll": "سڄي تاريخ صاف ڪريو",
+          "history.language": "ٻولي"
+        },
+        ta: {
+          "status.online": "ஆன்லைன்",
+          "status.offline": "ஆஃப்லைன்",
+          "language.label": "மொழி",
+          "hero.title": "பலவீனமான இணையத்திலும் உங்கள் மொழியில் விவசாய ஆலோசனை",
+          "hero.offline": "ஆஃப்லைனில் வேவல் செய்கிறது",
+          "demo.title": "நேரடி ஆய்வுரூப பலகம்",
+          "demo.mode.text": "உரை",
+          "demo.mode.live": "நேரடி ஆடியோ",
+          "demo.mode.file": "ஆடியோ ফাइல்",
+          "demo.send": "அனுப்பவும்",
+          "demo.live.start": "மைக் தொடங்கவும்",
+          "demo.live.stop": "மைக் நிறுத்தவும்",
+          "features.title": "முக்கிய பண்புகள்",
+          "footer.project": "AgriAdvice - AI விவசாय ஆலோசனை ஆய்வுரூபம்",
+          "history.title": "ஆலோசனை வரலாறு",
+          "history.button": "வரலாறு பார்க்கவும்",
+          "history.empty": "இதுவரை ஆலோசனை இல்லை. மேலே உள்ள பிரயோகத்தை முயற்சி செய்யவும்!",
+          "history.delete": "நீக்குக",
+          "history.deleteAll": "அனைத்து வரலாறு அழிக்கவும்",
+          "history.language": "மொழி"
+        },
+        te: {
+          "status.online": "ఆన్‌లైన్",
+          "status.offline": "ఆఫ్‌లైన్",
+          "language.label": "భాష",
+          "hero.title": "బలహీనమైన ఇంటర్‌నెట్‌లో కూడా మీ భాషలో వ్యవసాయ సలహా",
+          "hero.offline": "ఆఫ్‌లైన్‌లో పనిచేస్తుంది",
+          "demo.title": "లైవ్ డెమో ప్যానెల్",
+          "demo.mode.text": "పాఠ్యం",
+          "demo.mode.live": "లైవ్ ఆడియో",
+          "demo.mode.file": "ఆడియో ఫైల్",
+          "demo.send": "పంపించండి",
+          "demo.live.start": "మైక్ ప్రారంభించండి",
+          "demo.live.stop": "మైక్ ఆపండి",
+          "features.title": "ప్రధాన లక్షణాలు",
+          "footer.project": "AgriAdvice - AI వ్యవసాయ సలహా డెమో",
+          "history.title": "సలహా చరిత్ర",
+          "history.button": "చరిత్ర చూడండి",
+          "history.empty": "ఇంకా సలహా లేదు. పైన ఉన్న లైవ్ డెమోను ప్రయత్నించండి!",
+          "history.delete": "తొలగించండి",
+          "history.deleteAll": "సమస్త చరిత్ర క్లియర్ చేయండి",
+          "history.language": "భాష"
+        },
+        ur: {
+          "status.online": "آن لائن",
+          "status.offline": "آف لائن",
+          "language.label": "زبان",
+          "hero.title": "کمزور انٹرنیٹ میں بھی اپنی زبان میں زراعت کی مشورے",
+          "hero.offline": "آف لائن میں کام کرتا ہے",
+          "demo.title": "براہ راست ڈیمو پینل",
+          "demo.mode.text": "متن",
+          "demo.mode.live": "براہ راست آڈیو",
+          "demo.mode.file": "آڈیو فائل",
+          "demo.send": "بھیجیں",
+          "demo.live.start": "مائیک شروع کریں",
+          "demo.live.stop": "مائیک بند کریں",
+          "features.title": "اہم خصوصیات",
+          "footer.project": "AgriAdvice - AI زراعت کی مشورے ڈیمو",
+          "history.title": "مشورہ کی تاریخ",
+          "history.button": "تاریخ دیکھیں",
+          "history.empty": "ابھی کوئی مشورہ نہیں۔ اوپر کی براہ راست ڈیمو آزمائیں!",
+          "history.delete": "حذف کریں",
+          "history.deleteAll": "تمام تاریخ صاف کریں",
+          "history.language": "زبان"
+        }
+      };
+
+      const connectivityToggle = document.getElementById("connectivityToggle");
+      const connectivityText = document.getElementById("connectivityText");
+      const languageSelect = document.getElementById("languageSelect");
+      const chatForm = document.getElementById("chatForm");
+      const chatWindow = document.getElementById("chatWindow");
+      const demoInput = document.getElementById("demoInput");
+      const micButton = document.getElementById("micButton");
+      const micButtonText = document.getElementById("micButtonText");
+      const liveStatus = document.getElementById("liveStatus");
+      const liveTranscript = document.getElementById("liveTranscript");
+      const clearLive = document.getElementById("clearLive");
+      const audioFileInput = document.getElementById("audioFile");
+      const fileStatus = document.getElementById("fileStatus");
+      const livePreview = document.getElementById("livePreview");
+      const filePreview = document.getElementById("filePreview");
+
+      const modeText = document.getElementById("modeText");
+      const modeLive = document.getElementById("modeLive");
+      const modeFile = document.getElementById("modeFile");
+      const paneText = document.getElementById("paneText");
+      const paneLive = document.getElementById("paneLive");
+      const paneFile = document.getElementById("paneFile");
+
+      const modeButtons = { text: modeText, live: modeLive, file: modeFile };
+      const modePanes = { text: paneText, live: paneLive, file: paneFile };
+
+      let isOnline = true;
+      let currentLanguage = "en";
+      let currentMode = "text";
+      let mediaRecorder = null;
+      let mediaStream = null;
+      let liveAudioChunks = [];
+      let liveAudioBlob = null;
+      let isRecording = false;
+
+      function getMergedTranslations() {
+        return { ...translations.en, ...(translations[currentLanguage] || {}) };
+      }
+
+      function getGeneratedFallbackText(key) {
+        const selected = translations[currentLanguage] || {};
+        const fallbackChain = {
+          "hero.subtitle": ["hero.title", "features.title"],
+          "hero.help": ["hero.offline", "hero.title"],
+          "demo.subtitle": ["demo.title", "features.title"],
+          "how.title": ["hero.title", "features.title"],
+          "how.step1.title": ["demo.text.label", "hero.title"],
+          "how.step1.desc": ["hero.subtitle", "hero.title"],
+          "how.step2.title": ["features.title", "demo.title"],
+          "how.step2.desc": ["hero.help", "hero.offline"],
+          "how.step3.title": ["demo.title", "features.title"],
+          "how.step3.desc": ["hero.help", "hero.offline"],
+        };
+
+        const keys = fallbackChain[key] || [];
+        for (const chainKey of keys) {
+          if (typeof selected[chainKey] === "string" && selected[chainKey].length > 0) {
+            return selected[chainKey];
+          }
+        }
+        return null;
+      }
+
+      function getTranslation(key) {
+        const merged = getMergedTranslations();
+        if (Object.prototype.hasOwnProperty.call(merged, key)) {
+          return merged[key];
+        }
+
+        if (currentLanguage !== "en") {
+          const generated = getGeneratedFallbackText(key);
+          if (generated) {
+            return generated;
+          }
+        }
+
+        return null;
+      }
+
+      function t(key, fallback) {
+        const value = getTranslation(key);
+        if (typeof value === "string" && value.length > 0) {
+          return value;
+        }
+        return fallback || key;
+      }
+
+      function setAudioPreview(element, fileOrBlob) {
+        if (!element) {
+          return;
+        }
+
+        if (!fileOrBlob) {
+          element.removeAttribute("src");
+          element.classList.remove("has-audio");
+          element.load();
+          return;
+        }
+
+        const objectUrl = URL.createObjectURL(fileOrBlob);
+        element.src = objectUrl;
+        element.classList.add("has-audio");
+      }
+
+      function applyLanguage() {
+        const nodes = document.querySelectorAll("[data-i18n]");
+        nodes.forEach((node) => {
+          const key = node.getAttribute("data-i18n");
+          if (key) {
+            const translated = getTranslation(key);
+            if (typeof translated === "string" && translated.length > 0) {
+              node.textContent = translated;
+            }
+          }
+        });
+
+        const placeholderNodes = document.querySelectorAll("[data-i18n-placeholder]");
+        placeholderNodes.forEach((node) => {
+          const key = node.getAttribute("data-i18n-placeholder");
+          if (key) {
+            const translated = getTranslation(key);
+            if (typeof translated === "string" && translated.length > 0) {
+              node.setAttribute("placeholder", translated);
+            }
+          }
+        });
+
+        document.documentElement.setAttribute("lang", currentLanguage);
+        updateConnectivityText();
+        updateLiveStatusIdle();
+        updateFileStatus();
+        micButtonText.textContent = isRecording
+          ? t("demo.live.stop", micButtonText.textContent || "Stop Mic")
+          : t("demo.live.start", micButtonText.textContent || "Start Mic");
+      }
+
+      function updateConnectivityText() {
+        connectivityText.textContent = isOnline
+          ? t("status.online", connectivityText.textContent || "Online")
+          : t("status.offline", connectivityText.textContent || "Offline");
+      }
+
+      function applyConnectivityState() {
+        connectivityToggle.classList.toggle("is-online", isOnline);
+        updateConnectivityText();
+      }
+
+      function setMode(mode) {
+        currentMode = mode;
+        Object.keys(modeButtons).forEach((name) => {
+          const isActive = name === mode;
+          modeButtons[name].classList.toggle("is-active", isActive);
+          modeButtons[name].setAttribute("aria-selected", String(isActive));
+          modePanes[name].classList.toggle("is-active", isActive);
+        });
+
+        if (mode !== "live") {
+          stopLiveRecording();
+        }
+      }
+
+      function buildConfidenceBadge(confidenceValue) {
+        const badge = document.createElement("span");
+        badge.className = "confidence-badge";
+
+        if (confidenceValue > 75) {
+          badge.classList.add("confidence-high");
+        } else if (confidenceValue >= 40) {
+          badge.classList.add("confidence-medium");
+        } else {
+          badge.classList.add("confidence-low");
+        }
+
+        const confidencePrefix = t("chat.confidence.prefix", "Confidence");
+        badge.textContent = confidencePrefix + ": " + confidenceValue + "%";
+        return badge;
+      }
+
+      function buildFormattedResponseNode(text) {
+        const container = document.createElement("div");
+        container.className = "bubble-content";
+
+        if (!text || typeof text !== "string") {
+          const paragraph = document.createElement("p");
+          paragraph.textContent = t("chat.error");
+          container.appendChild(paragraph);
+          return container;
+        }
+
+        const lines = text
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0);
+
+        if (lines.length === 0) {
+          const paragraph = document.createElement("p");
+          paragraph.textContent = text;
+          container.appendChild(paragraph);
+          return container;
+        }
+
+        let listNode = null;
+        for (const line of lines) {
+          const unorderedMatch = line.match(/^[-*]\s+(.*)$/);
+          const orderedMatch = line.match(/^\d+[.)]\s+(.*)$/);
+
+          if (unorderedMatch) {
+            if (!listNode || listNode.tagName !== "UL") {
+              listNode = document.createElement("ul");
+              container.appendChild(listNode);
+            }
+            const item = document.createElement("li");
+            item.textContent = unorderedMatch[1];
+            listNode.appendChild(item);
+            continue;
+          }
+
+          if (orderedMatch) {
+            if (!listNode || listNode.tagName !== "OL") {
+              listNode = document.createElement("ol");
+              container.appendChild(listNode);
+            }
+            const item = document.createElement("li");
+            item.textContent = orderedMatch[1];
+            listNode.appendChild(item);
+            continue;
+          }
+
+          listNode = null;
+          const paragraph = document.createElement("p");
+          paragraph.textContent = line;
+          container.appendChild(paragraph);
+        }
+
+        return container;
+      }
+
+      function setPendingState(isPending) {
+        const sendButtons = document.querySelectorAll(".send-button");
+        sendButtons.forEach((button) => {
+          button.disabled = isPending;
+        });
+      }
+
+      let typingBubble = null;
+
+      function appendTypingBubble() {
+        if (typingBubble) {
+          return;
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble agent typing";
+
+        const dots = document.createElement("div");
+        dots.className = "typing-dots";
+        dots.innerHTML = "<span></span><span></span><span></span>";
+
+        const source = document.createElement("p");
+        source.className = "source-line";
+        source.textContent = t("demo.sending", "Sending to AI...");
+
+        bubble.appendChild(dots);
+        bubble.appendChild(source);
+        chatWindow.appendChild(bubble);
+        typingBubble = bubble;
+      }
+
+      function removeTypingBubble() {
+        if (typingBubble && typingBubble.parentNode) {
+          typingBubble.parentNode.removeChild(typingBubble);
+        }
+        typingBubble = null;
+      }
+
+      function appendPolicyBubble(message) {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble agent error";
+
+        const text = document.createElement("p");
+        text.textContent = message;
+        bubble.appendChild(text);
+
+        const source = document.createElement("p");
+        source.className = "source-line";
+        source.textContent = "Safety Policy";
+        bubble.appendChild(source);
+
+        chatWindow.appendChild(bubble);
+      }
+
+      function appendFarmerBubble(text) {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble farmer";
+        const message = document.createElement("p");
+        message.textContent = text;
+        bubble.appendChild(message);
+        chatWindow.appendChild(bubble);
+      }
+
+      function appendAgentBubble(payload) {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble agent";
+
+        const responseNode = buildFormattedResponseNode(payload?.translatedResponse || t("chat.error"));
+        bubble.appendChild(responseNode);
+
+        const confidenceSeed = (payload?.translatedResponse || "").length % 61;
+        const confidenceValue = Math.max(40, Math.min(95, 35 + confidenceSeed));
+        bubble.appendChild(buildConfidenceBadge(confidenceValue));
+
+        const source = document.createElement("p");
+        source.className = "source-line";
+        const responseLanguage = payload?.responseLanguage || currentLanguage;
+        const languageName = languageOptions[responseLanguage] || responseLanguage;
+        source.textContent = t("chat.source.dynamic") + " | " + languageName + " | " + (payload?.sessionId || "session");
+        bubble.appendChild(source);
+
+        if (payload?.audio && payload.audio.content) {
+          const player = document.createElement("audio");
+          player.controls = true;
+          player.className = "audio-preview has-audio";
+          player.src = "data:" + payload.audio.mimeType + ";base64," + payload.audio.content;
+          bubble.appendChild(player);
+        }
+
+        chatWindow.appendChild(bubble);
+      }
+
+      function updateLiveStatusIdle() {
+        if (!isRecording && !liveAudioBlob) {
+          liveStatus.textContent = t("demo.live.statusIdle");
+        }
+      }
+
+      function updateFileStatus() {
+        const file = audioFileInput.files && audioFileInput.files[0];
+        if (file) {
+          fileStatus.textContent = t("demo.file.selected") + " " + file.name + ". " + t("demo.file.help") + " " + t("demo.file.preview");
+          setAudioPreview(filePreview, file);
+        } else {
+          fileStatus.textContent = t("demo.file.empty");
+          setAudioPreview(filePreview, null);
+        }
+      }
+
+      async function startLiveRecording() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+          liveStatus.textContent = t("demo.live.statusUnsupported");
+          return;
+        }
+
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          liveAudioChunks = [];
+          mediaRecorder = new MediaRecorder(mediaStream);
+
+          mediaRecorder.ondataavailable = function (event) {
+            if (event.data && event.data.size > 0) {
+              liveAudioChunks.push(event.data);
+            }
+          };
+
+          mediaRecorder.onstop = function () {
+            liveAudioBlob = new Blob(liveAudioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+            liveTranscript.value = t("demo.live.recorded");
+            liveStatus.textContent = t("demo.live.statusCaptured");
+            setAudioPreview(livePreview, liveAudioBlob);
+            if (mediaStream) {
+              mediaStream.getTracks().forEach((track) => track.stop());
+              mediaStream = null;
+            }
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          micButton.classList.add("is-recording");
+          liveStatus.classList.add("is-recording");
+          micButtonText.textContent = t("demo.live.stop");
+          liveStatus.textContent = t("demo.live.statusListening");
+        } catch {
+          liveStatus.textContent = t("demo.live.statusUnsupported");
+        }
+      }
+
+      function stopLiveRecording() {
+        if (mediaRecorder && isRecording) {
+          mediaRecorder.stop();
+        }
+        isRecording = false;
+        micButton.classList.remove("is-recording");
+        liveStatus.classList.remove("is-recording");
+        micButtonText.textContent = t("demo.live.start");
+      }
+
+      async function sendTextConsultation(textQuery) {
+        const response = await fetch(DEMO_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputType: "text",
+            textQuery,
+            preferredLanguage: currentLanguage,
+          }),
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload.success || !payload.data) {
+          const requestError = new Error(payload?.error?.message || "Request failed");
+          requestError.code = payload?.error?.code;
+          requestError.status = response.status;
+          throw requestError;
+        }
+
+        return payload.data;
+      }
+
+      async function sendAudioConsultation(file) {
+        const formData = new FormData();
+        formData.append("inputType", "audio");
+        formData.append("preferredLanguage", currentLanguage);
+        formData.append("audio", file);
+
+        const response = await fetch(DEMO_ENDPOINT, {
+          method: "POST",
+          body: formData,
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload.success || !payload.data) {
+          const requestError = new Error(payload?.error?.message || "Request failed");
+          requestError.code = payload?.error?.code;
+          requestError.status = response.status;
+          throw requestError;
+        }
+
+        return payload.data;
+      }
+
+      connectivityToggle.addEventListener("click", function () {
+        isOnline = !isOnline;
+        applyConnectivityState();
+      });
+
+      languageSelect.addEventListener("change", function () {
+        currentLanguage = languageSelect.value;
+        applyLanguage();
+      });
+
+      modeText.addEventListener("click", function () {
+        setMode("text");
+      });
+
+      modeLive.addEventListener("click", function () {
+        setMode("live");
+      });
+
+      modeFile.addEventListener("click", function () {
+        setMode("file");
+      });
+
+      micButton.addEventListener("click", function () {
+        if (isRecording) {
+          stopLiveRecording();
+        } else {
+          void startLiveRecording();
+        }
+      });
+
+      clearLive.addEventListener("click", function () {
+        liveTranscript.value = "";
+        liveAudioBlob = null;
+        setAudioPreview(livePreview, null);
+        updateLiveStatusIdle();
+      });
+
+      audioFileInput.addEventListener("change", function () {
+        updateFileStatus();
+      });
+
+      chatForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        let consultationData;
+        let capturedQuestion = "";
+        let pendingVoicePrefix = "";
+
+        setPendingState(true);
+        appendTypingBubble();
+
+        try {
+          if (currentMode === "text") {
+            const question = demoInput.value.trim();
+            if (!question) {
+              return;
+            }
+
+            appendFarmerBubble(t("chat.farmer.textPrefix") + ": " + question);
+            capturedQuestion = question;
+            demoInput.value = "";
+            consultationData = await sendTextConsultation(question);
+          }
+
+          if (currentMode === "live") {
+            if (!liveAudioBlob) {
+              return;
+            }
+
+            appendFarmerBubble(t("chat.farmer.livePrefix") + ": " + t("demo.live.recorded"));
+            pendingVoicePrefix = t("chat.farmer.livePrefix");
+            liveStatus.textContent = t("demo.sending");
+            const liveFile = new File([liveAudioBlob], "live-input.webm", { type: liveAudioBlob.type || "audio/webm" });
+            consultationData = await sendAudioConsultation(liveFile);
+            liveAudioBlob = null;
+            liveTranscript.value = "";
+            setAudioPreview(livePreview, null);
+            updateLiveStatusIdle();
+
+            if (consultationData?.originalTranscript) {
+              capturedQuestion = consultationData.originalTranscript;
+              appendFarmerBubble(`${pendingVoicePrefix}: ${consultationData.originalTranscript}`);
+            }
+          }
+
+          if (currentMode === "file") {
+            const file = audioFileInput.files && audioFileInput.files[0];
+            if (!file) {
+              return;
+            }
+
+            appendFarmerBubble(t("chat.farmer.filePrefix") + ": " + file.name);
+            pendingVoicePrefix = t("chat.farmer.filePrefix");
+            capturedQuestion = file.name;
+            fileStatus.textContent = t("demo.sending");
+            consultationData = await sendAudioConsultation(file);
+            audioFileInput.value = "";
+            updateFileStatus();
+
+            if (consultationData?.originalTranscript) {
+              capturedQuestion = consultationData.originalTranscript;
+              appendFarmerBubble(`${pendingVoicePrefix}: ${consultationData.originalTranscript}`);
+            }
+          }
+
+          appendAgentBubble(consultationData);
+        } catch (error) {
+          const code = error && typeof error === "object" ? error.code : undefined;
+          const status = error && typeof error === "object" ? error.status : undefined;
+          const message = error instanceof Error ? error.message : "";
+          const blocked =
+            code === "CONTENT_BLOCKED" ||
+            status === 403 ||
+            status === 422 ||
+            /blocked by safety policy|unsafe|illegal|censor|policy/i.test(message);
+
+          if (blocked) {
+            appendPolicyBubble(message || "Request was blocked by safety policy.");
+          } else {
+            appendAgentBubble({ translatedResponse: t("chat.error") + " " + message });
+          }
+        } finally {
+          removeTypingBubble();
+          setPendingState(false);
+        }
+
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Save consultation to history
+        if (consultationData) {
+          saveConsultation(consultationData, capturedQuestion);
+        }
+      });
+
+      // History functions
+      const HISTORY_STORAGE_KEY = "agriadvice_history";
+      const historyButton = document.getElementById("historyButton");
+      const historyModal = document.getElementById("historyModal");
+      const historyOverlay = document.getElementById("historyOverlay");
+      const historyCloseButton = document.getElementById("historyCloseButton");
+      const historyClearButton = document.getElementById("historyClearButton");
+      const historyList = document.getElementById("historyList");
+
+      const ADMIN_TOKEN_KEY = "agriadvice_admin_token";
+      const adminButton = document.getElementById("adminButton");
+      const adminModal = document.getElementById("adminModal");
+      const adminOverlay = document.getElementById("adminOverlay");
+      const adminCloseButton = document.getElementById("adminCloseButton");
+      const adminHeaderLogout = document.getElementById("adminHeaderLogout");
+      const adminLoginForm = document.getElementById("adminLoginForm");
+      const adminUsername = document.getElementById("adminUsername");
+      const adminPassword = document.getElementById("adminPassword");
+      const adminLoginStatus = document.getElementById("adminLoginStatus");
+      const adminLoginPanel = document.getElementById("adminLoginPanel");
+      const adminLogsPanel = document.getElementById("adminLogsPanel");
+      const adminLogsList = document.getElementById("adminLogsList");
+      const adminLogFilePath = document.getElementById("adminLogFilePath");
+      const adminCopyPathButton = document.getElementById("adminCopyPathButton");
+      const adminLogSearch = document.getElementById("adminLogSearch");
+      const adminRefreshLogs = document.getElementById("adminRefreshLogs");
+      const adminLogoutButton = document.getElementById("adminLogoutButton");
+      let lastAdminLogs = [];
+
+      function saveConsultation(consultationData, questionText) {
+        try {
+          let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || "[]");
+          if (!Array.isArray(history)) {
+            history = [];
+          }
+
+          const consultation = {
+            id: Date.now(),
+            question: questionText || "",
+            answer: consultationData?.translatedResponse || "",
+            language: currentLanguage,
+            timestamp: new Date().toISOString(),
+            responseLanguage: consultationData?.responseLanguage || currentLanguage
+          };
+
+          history.unshift(consultation); // Add to beginning
+          if (history.length > 50) {
+            history = history.slice(0, 50); // Keep only last 50
+          }
+
+          localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+        } catch (error) {
+          console.error("Failed to save consultation:", error);
+        }
+      }
+
+      function loadHistory() {
+        try {
+          const history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || "[]");
+          historyList.innerHTML = "";
+
+          if (history.length === 0) {
+            const emptyMsg = document.createElement("p");
+            emptyMsg.className = "history-empty";
+            emptyMsg.setAttribute("data-i18n", "history.empty");
+            emptyMsg.textContent = t("history.empty");
+            historyList.appendChild(emptyMsg);
+            return;
+          }
+
+          history.forEach((item) => {
+            const historyItem = document.createElement("div");
+            historyItem.className = "history-item";
+
+            const header = document.createElement("div");
+            header.className = "history-item-header";
+
+            const langLabel = document.createElement("span");
+            langLabel.className = "history-item-language";
+            const responseLanguage = item.responseLanguage || item.language;
+            langLabel.textContent = languageOptions[responseLanguage] || responseLanguage;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "history-item-delete";
+            deleteBtn.setAttribute("type", "button");
+            deleteBtn.textContent = t("history.delete");
+            deleteBtn.addEventListener("click", function () {
+              deleteHistoryItem(item.id);
+            });
+
+            header.appendChild(langLabel);
+            header.appendChild(deleteBtn);
+
+            const question = document.createElement("p");
+            question.className = "history-item-question";
+            question.textContent = t("history.question", "Question") + ": " + (item.question || "-");
+
+            const answer = document.createElement("p");
+            answer.className = "history-item-answer";
+            answer.textContent = t("history.answer", "Answer") + ": " + (item.answer || "-");
+
+            const time = document.createElement("p");
+            time.className = "history-item-time";
+            const date = new Date(item.timestamp);
+            time.textContent = t("history.time", "Time") + ": " + date.toLocaleString();
+
+            historyItem.appendChild(header);
+            historyItem.appendChild(question);
+            historyItem.appendChild(answer);
+            historyItem.appendChild(time);
+
+            historyList.appendChild(historyItem);
+          });
+        } catch (error) {
+          console.error("Failed to load history:", error);
+          historyList.innerHTML = "<p class='history-empty'>Error loading history</p>";
+        }
+      }
+
+      function deleteHistoryItem(id) {
+        try {
+          let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || "[]");
+          history = history.filter((item) => item.id !== id);
+          localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+          loadHistory();
+        } catch (error) {
+          console.error("Failed to delete consultation:", error);
+        }
+      }
+
+      function openHistoryModal() {
+        if (!historyModal || !historyList) {
+          return;
+        }
+        historyModal.classList.add("is-open");
+        historyModal.setAttribute("aria-hidden", "false");
+        loadHistory();
+        applyLanguage(); // Reapply translations in modal
+      }
+
+      function closeHistoryModal() {
+        if (!historyModal) {
+          return;
+        }
+        historyModal.classList.remove("is-open");
+        historyModal.setAttribute("aria-hidden", "true");
+      }
+
+      if (historyButton) {
+        historyButton.addEventListener("click", openHistoryModal);
+      }
+      if (historyOverlay) {
+        historyOverlay.addEventListener("click", closeHistoryModal);
+      }
+      if (historyCloseButton) {
+        historyCloseButton.addEventListener("click", closeHistoryModal);
+      }
+
+      if (historyClearButton) {
+        historyClearButton.addEventListener("click", function () {
+        if (confirm("Are you sure you want to clear all history? This cannot be undone.")) {
+          try {
+            localStorage.removeItem(HISTORY_STORAGE_KEY);
+            loadHistory();
+          } catch (error) {
+            console.error("Failed to clear history:", error);
+          }
+        }
+        });
+      }
+
+      function getAdminToken() {
+        return sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
+      }
+
+      function setAdminToken(token) {
+        if (!token) {
+          sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+          return;
+        }
+        sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+      }
+
+      function clearAdminLogsView() {
+        lastAdminLogs = [];
+        if (adminLogsList) {
+          adminLogsList.innerHTML = "";
+        }
+        if (adminLogFilePath) {
+          adminLogFilePath.textContent = "Log file: -";
+        }
+        if (adminLogSearch) {
+          adminLogSearch.value = "";
+        }
+      }
+
+      function renderAdminLogs(logs) {
+        if (!adminLogsList || !getAdminToken()) {
+          return;
+        }
+        adminLogsList.innerHTML = "";
+        if (!Array.isArray(logs) || logs.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "history-empty";
+          empty.textContent = t("admin.logsEmpty", "No logs yet.");
+          adminLogsList.appendChild(empty);
+          return;
+        }
+
+        logs.forEach((log) => {
+          const item = document.createElement("div");
+          item.className = "admin-log-item";
+
+          const row1 = document.createElement("div");
+          row1.className = "admin-log-row";
+          row1.textContent = `${log.method} ${log.path}`;
+
+          const row2 = document.createElement("div");
+          row2.className = "admin-log-row";
+          row2.textContent = `Status ${log.statusCode} | ${log.latencyMs} ms | ${log.inputType || "-"}`;
+
+          const row3 = document.createElement("div");
+          row3.className = "admin-log-row";
+          row3.textContent = new Date(log.timestamp).toLocaleString();
+
+          const transcriptRow = document.createElement("div");
+          transcriptRow.className = "admin-log-row";
+          transcriptRow.textContent = `Transcript: ${log.transcript || "-"}`;
+
+          item.appendChild(row1);
+          item.appendChild(row2);
+          item.appendChild(row3);
+          item.appendChild(transcriptRow);
+          adminLogsList.appendChild(item);
+        });
+      }
+
+      async function fetchAdminLogs() {
+        const token = getAdminToken();
+        if (!token) {
+          clearAdminLogsView();
+          return;
+        }
+        const response = await fetch(ADMIN_LOGS_ENDPOINT + "?limit=300", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload?.error?.message || "Failed to fetch logs");
+        }
+        lastAdminLogs = payload.data?.logs || [];
+        if (adminLogFilePath) {
+          adminLogFilePath.textContent = "Log file: " + (payload.data?.logFilePath || "-");
+        }
+        renderAdminLogs(lastAdminLogs);
+      }
+
+      function applyAdminLogFilter() {
+        if (!adminLogSearch) {
+          renderAdminLogs(lastAdminLogs);
+          return;
+        }
+
+        const query = adminLogSearch.value.trim().toLowerCase();
+        if (!query) {
+          renderAdminLogs(lastAdminLogs);
+          return;
+        }
+
+        const filtered = lastAdminLogs.filter((log) => {
+          const combined = `${log.method} ${log.path} ${log.statusCode} ${log.latencyMs} ${log.timestamp}`.toLowerCase();
+          return combined.includes(query);
+        });
+        renderAdminLogs(filtered);
+      }
+
+      function setAdminPanels(loggedIn) {
+        if (!adminLoginPanel || !adminLogsPanel) {
+          return;
+        }
+        adminLoginPanel.hidden = loggedIn;
+        adminLogsPanel.hidden = !loggedIn;
+        if (adminHeaderLogout) {
+          adminHeaderLogout.hidden = !loggedIn;
+        }
+        if (!loggedIn) {
+          clearAdminLogsView();
+        }
+      }
+
+      async function openAdminModal() {
+        if (!adminModal) {
+          return;
+        }
+        adminModal.classList.add("is-open");
+        adminModal.setAttribute("aria-hidden", "false");
+
+        const hasToken = Boolean(getAdminToken());
+        setAdminPanels(hasToken);
+        if (hasToken) {
+          try {
+            await fetchAdminLogs();
+          } catch (error) {
+            setAdminToken("");
+            setAdminPanels(false);
+            if (adminLoginStatus) {
+              adminLoginStatus.textContent = error instanceof Error ? error.message : "Login expired";
+            }
+          }
+        } else {
+          clearAdminLogsView();
+        }
+      }
+
+      function closeAdminModal() {
+        if (!adminModal) {
+          return;
+        }
+        adminModal.classList.remove("is-open");
+        adminModal.setAttribute("aria-hidden", "true");
+      }
+
+      if (adminButton) {
+        adminButton.addEventListener("click", function () {
+          void openAdminModal();
+        });
+      }
+      if (adminOverlay) {
+        adminOverlay.addEventListener("click", closeAdminModal);
+      }
+      if (adminCloseButton) {
+        adminCloseButton.addEventListener("click", closeAdminModal);
+      }
+
+      if (adminLoginForm) {
+        adminLoginForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const username = adminUsername && "value" in adminUsername ? adminUsername.value.trim() : "";
+          const password = adminPassword && "value" in adminPassword ? adminPassword.value : "";
+
+          try {
+            const response = await fetch(ADMIN_LOGIN_ENDPOINT, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const payload = await response.json();
+            if (!response.ok || !payload.success || !payload.data?.token) {
+              throw new Error(payload?.error?.message || t("admin.loginFailed", "Login failed. Check credentials."));
+            }
+
+            setAdminToken(payload.data.token);
+            setAdminPanels(true);
+            if (adminLoginStatus) {
+              adminLoginStatus.textContent = "";
+            }
+            await fetchAdminLogs();
+          } catch (error) {
+            if (adminLoginStatus) {
+              adminLoginStatus.textContent = error instanceof Error ? error.message : t("admin.loginFailed", "Login failed. Check credentials.");
+            }
+          }
+        });
+      }
+
+      if (adminRefreshLogs) {
+        adminRefreshLogs.addEventListener("click", function () {
+          void fetchAdminLogs();
+        });
+      }
+
+      if (adminLogSearch) {
+        adminLogSearch.addEventListener("input", applyAdminLogFilter);
+      }
+
+      if (adminCopyPathButton) {
+        adminCopyPathButton.addEventListener("click", async function () {
+          if (!adminLogFilePath) {
+            return;
+          }
+
+          const pathText = adminLogFilePath.textContent?.replace(/^Log file:\s*/, "") || "";
+          if (!pathText || pathText === "-") {
+            return;
+          }
+
+          try {
+            await navigator.clipboard.writeText(pathText);
+            adminCopyPathButton.textContent = "Copied";
+            setTimeout(() => {
+              adminCopyPathButton.textContent = "Copy Path";
+            }, 1200);
+          } catch {
+            adminCopyPathButton.textContent = "Copy failed";
+            setTimeout(() => {
+              adminCopyPathButton.textContent = "Copy Path";
+            }, 1200);
+          }
+        });
+      }
+
+      if (adminLogoutButton) {
+        adminLogoutButton.addEventListener("click", function () {
+          setAdminToken("");
+          setAdminPanels(false);
+        });
+      }
+
+      if (adminHeaderLogout) {
+        adminHeaderLogout.addEventListener("click", function () {
+          setAdminToken("");
+          setAdminPanels(false);
+        });
+      }
+
+      // Close modal on Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && historyModal && historyModal.classList.contains("is-open")) {
+          closeHistoryModal();
+        }
+        if (e.key === "Escape" && adminModal && adminModal.classList.contains("is-open")) {
+          closeAdminModal();
+        }
+      });
+
+      languageSelect.value = currentLanguage;
+      setMode("text");
+      applyLanguage();
+      applyConnectivityState();
+    })();
+  </script>
+
+</body>
 </html>

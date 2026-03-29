@@ -52,9 +52,9 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 
 print("Booting AI models (one-time startup)...")
 audio_model = WhisperModel("large-v3-turbo", device="cpu", compute_type="int8", download_root=CACHE_DIR)
-llm_tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-1.5B-Instruct")
+llm_tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-3B-Instruct")
 llm_model = AutoModelForCausalLM.from_pretrained(
-    "Qwen/Qwen2.5-1.5B-Instruct", torch_dtype=torch.float32, device_map="cpu"
+    "Qwen/Qwen2.5-3B-Instruct", torch_dtype=torch.float32, device_map="cpu"
 )
 reasoning_pipeline = pipeline("text-generation", model=llm_model, tokenizer=llm_tokenizer, device_map="cpu")
 policy_classifier = pipeline(
@@ -72,12 +72,78 @@ kb_embeddings = embedder.encode(master_knowledge_base)
 rag_index = faiss.IndexFlatL2(kb_embeddings.shape[1])
 rag_index.add(np.array(kb_embeddings))
 
+SUPPORTED_OUTPUT_LANGUAGES = {
+    "en",
+    "as",
+    "brx",
+    "doi",
+    "hi",
+    "bn",
+    "gu",
+    "kn",
+    "ks",
+    "kok",
+    "mai",
+    "ml",
+    "mni",
+    "mr",
+    "ne",
+    "or",
+    "pa",
+    "sa",
+    "sat",
+    "sd",
+    "ta",
+    "te",
+    "ur",
+}
+
+LANG_CODE_ALIASES = {
+    "hi-in": "hi",
+    "mr-in": "mr",
+    "bn-in": "bn",
+    "ta-in": "ta",
+    "te-in": "te",
+    "kn-in": "kn",
+    "ml-in": "ml",
+    "pa-in": "pa",
+    "gu-in": "gu",
+    "or-in": "or",
+    "as-in": "as",
+    "sd-in": "sd",
+    "ur-pk": "ur",
+}
+
+
+def normalize_language_code(code: Optional[str]) -> str:
+    value = (code or "").strip().lower()
+    if not value:
+        return ""
+    if value in LANG_CODE_ALIASES:
+        return LANG_CODE_ALIASES[value]
+    if "-" in value:
+        root = value.split("-", 1)[0]
+        return LANG_CODE_ALIASES.get(root, root)
+    return value
+
+
+def resolve_output_language(preferred: Optional[str], detected: Optional[str]) -> str:
+    preferred_lang = normalize_language_code(preferred)
+    detected_lang = normalize_language_code(detected)
+
+    if preferred_lang in SUPPORTED_OUTPUT_LANGUAGES:
+        return preferred_lang
+    if detected_lang in SUPPORTED_OUTPUT_LANGUAGES:
+        return detected_lang
+    return "en"
+
 
 class SwarmState(TypedDict):
     session_id: str
     user_audio_path: Optional[str]
     network_status: str
     detected_language: str
+    response_language: str
     native_transcript: str
     english_query: str
     extracted_entities: dict
@@ -94,6 +160,7 @@ class SwarmRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     input_type: Literal["audio", "text"]
+    preferred_language: Optional[str] = Field(default=None)
     audio_url: Optional[str] = Field(default=None)
     audio_base64: Optional[str] = Field(default=None)
     text_query: Optional[str] = Field(default=None, min_length=2)
@@ -130,9 +197,9 @@ def perception_node(state: SwarmState) -> SwarmState:
             if not native_text:
                 raise ValueError("Could not transcribe audio")
             try:
-                actual_lang = detect(native_text)
+                actual_lang = normalize_language_code(detect(native_text))
             except Exception:
-                actual_lang = info.language or "en"
+                actual_lang = normalize_language_code(info.language) or "en"
         except Exception as exc:
             raise HTTPException(status_code=422, detail=f"Audio transcription failed: {str(exc)}")
     else:
@@ -140,19 +207,17 @@ def perception_node(state: SwarmState) -> SwarmState:
         if not native_text:
             raise HTTPException(status_code=400, detail="text_query is empty")
         try:
-            actual_lang = detect(native_text)
+            actual_lang = normalize_language_code(detect(native_text))
         except Exception:
             actual_lang = "en"
-
-    if actual_lang == "ur":
-        actual_lang = "hi"
 
     try:
         english_text = (
             GoogleTranslator(source="auto", target="en").translate(native_text) if actual_lang != "en" else native_text
         )
-    except Exception as exc:
-        raise HTTPException(status_code=422, detail=f"Translation to English failed: {str(exc)}")
+    except Exception:
+        # Fallback to original text instead of failing the entire consultation request.
+        english_text = native_text
 
     state.update(
         {
@@ -175,10 +240,32 @@ def gatekeeper_node(state: SwarmState) -> SwarmState:
 
     if top_label == "profanity":
         state["routing_error"] = "PROFANITY_DETECTED"
-        state["final_translated_text"] = "Please use respectful language."
+        policy_message = "Please use respectful language."
+        target_lang = resolve_output_language(state.get("response_language"), state.get("detected_language"))
+        if target_lang == "en":
+            state["final_translated_text"] = policy_message
+        else:
+            try:
+                state["final_translated_text"] = GoogleTranslator(source="en", target=target_lang).translate(
+                    policy_message
+                )
+            except Exception:
+                state["final_translated_text"] = policy_message
+                state["response_language"] = "en"
     elif top_label == "out of domain":
         state["routing_error"] = "OUT_OF_DOMAIN"
-        state["final_translated_text"] = "I am an agricultural expert. Ask farming questions."
+        policy_message = "I am an agricultural expert. Ask farming questions."
+        target_lang = resolve_output_language(state.get("response_language"), state.get("detected_language"))
+        if target_lang == "en":
+            state["final_translated_text"] = policy_message
+        else:
+            try:
+                state["final_translated_text"] = GoogleTranslator(source="en", target=target_lang).translate(
+                    policy_message
+                )
+            except Exception:
+                state["final_translated_text"] = policy_message
+                state["response_language"] = "en"
     else:
         state["routing_error"] = None
     return state
@@ -198,9 +285,33 @@ async def data_orchestrator_node(state: SwarmState) -> SwarmState:
 
 def agronomist_node(state: SwarmState) -> SwarmState:
     prompt = (
-        "Elite Agronomist AI.\n"
-        f"DATA: {state.get('harvested_data', {})}\n"
-        "Give actionable directives."
+        "You are an expert agronomist assistant for Indian farming contexts.\n"
+        "Use only the user query and provided data context.\n"
+        "If data is incomplete or uncertain, clearly say so and avoid overconfident claims.\n"
+        "Provide practical, safe, low-cost actions first.\n"
+        "Never recommend banned substances or illegal practices.\n"
+        "\n"
+        "Return the answer in this exact readable format:\n"
+        "Summary:\n"
+        "- One short summary sentence.\n"
+        "\n"
+        "Likely causes:\n"
+        "1. First likely cause\n"
+        "2. Second likely cause\n"
+        "\n"
+        "Action plan (next 7 days):\n"
+        "1. Day 0-1 action\n"
+        "2. Day 2-3 action\n"
+        "3. Day 4-7 action\n"
+        "\n"
+        "What to avoid:\n"
+        "- Unsafe or harmful action\n"
+        "\n"
+        "When to seek local expert help:\n"
+        "- Escalation signs\n"
+        "\n"
+        "Keep total length between 120 and 220 words and avoid markdown symbols like # or **.\n"
+        f"DATA: {state.get('harvested_data', {})}"
     )
     try:
         out = reasoning_pipeline(
@@ -224,7 +335,8 @@ def compliance_node(state: SwarmState) -> SwarmState:
 
 
 def final_translation_node(state: SwarmState) -> SwarmState:
-    lang = state.get("detected_language", "hi")
+    lang = resolve_output_language(state.get("response_language"), state.get("detected_language"))
+    state["response_language"] = lang
     if lang == "en":
         state["final_translated_text"] = state["agronomist_draft_en"]
         return state
@@ -234,15 +346,14 @@ def final_translation_node(state: SwarmState) -> SwarmState:
             state["agronomist_draft_en"]
         )
     except Exception:
+        state["response_language"] = "en"
         state["final_translated_text"] = state["agronomist_draft_en"]
     return state
 
 
 def voicebox_node(state: SwarmState) -> SwarmState:
-    lang_code = state.get("detected_language", "hi")
-    indian_lang_matrix = ["hi", "gu", "mr", "bn", "ta", "te", "kn", "ml", "pa", "en"]
-    if lang_code not in indian_lang_matrix:
-        lang_code = "hi"
+    lang_code = resolve_output_language(state.get("response_language"), state.get("detected_language"))
+    state["response_language"] = lang_code
 
     try:
         tts = gTTS(text=state.get("final_translated_text", "Error."), lang=lang_code, slow=False)
@@ -251,6 +362,16 @@ def voicebox_node(state: SwarmState) -> SwarmState:
         state["output_audio_path"] = out_path
         return state
     except Exception as exc:
+        if lang_code != "en":
+            try:
+                # Keep UI text language as requested; fallback only the audio voice locale.
+                tts = gTTS(text=state.get("final_translated_text", "Error."), lang="en", slow=False)
+                out_path = os.path.join(STATIC_DIR, f"{state['session_id']}_output.mp3")
+                tts.save(out_path)
+                state["output_audio_path"] = out_path
+                return state
+            except Exception:
+                pass
         raise HTTPException(status_code=500, detail=f"TTS generation failed: {str(exc)}")
 
 
@@ -325,6 +446,7 @@ async def get_agri_advice(req: SwarmRequest, background_tasks: BackgroundTasks):
         "user_audio_path": local_audio_path,
         "network_status": "",
         "detected_language": "",
+        "response_language": (req.preferred_language or "").strip().lower() if req.preferred_language else "",
         "native_transcript": req.text_query if req.input_type == "text" else "",
         "english_query": "",
         "extracted_entities": {},
@@ -379,6 +501,7 @@ async def get_agri_advice(req: SwarmRequest, background_tasks: BackgroundTasks):
         "status": "success",
         "session_id": session_id,
         "detected_language": final_state.get("detected_language"),
+        "response_language": final_state.get("response_language") or final_state.get("detected_language"),
         "original_transcript": final_state.get("native_transcript"),
         "translated_response": final_state.get("final_translated_text"),
         "audio": {

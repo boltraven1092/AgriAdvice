@@ -13,6 +13,7 @@ export type ApiEnvelope<T> = {
 export type ConsultationData = {
   sessionId?: string;
   detectedLanguage?: string;
+  responseLanguage?: string;
   originalTranscript?: string;
   translatedResponse?: string;
   audio?: {

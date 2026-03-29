@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { config } from "../config/env";
 import { ConsultationData } from "../types/api";
+import type { SupportedLanguageCode } from "../config/languages";
 
 const aiClient = axios.create({
   baseURL: config.aiMicroserviceUrl,
@@ -14,6 +15,7 @@ type PythonResponse = {
   status: string;
   session_id?: string;
   detected_language?: string;
+  response_language?: string;
   original_transcript?: string;
   translated_response?: string;
   audio?: {
@@ -23,11 +25,15 @@ type PythonResponse = {
   };
 };
 
-export async function requestConsultationByText(textQuery: string): Promise<ConsultationData> {
+export async function requestConsultationByText(
+  textQuery: string,
+  preferredLanguage?: SupportedLanguageCode
+): Promise<ConsultationData> {
   try {
     const response = await aiClient.post<PythonResponse>("/api/agri-advice", {
       input_type: "text",
       text_query: textQuery,
+      preferred_language: preferredLanguage,
     });
     return mapPythonResponse(response.data);
   } catch (error) {
@@ -35,11 +41,15 @@ export async function requestConsultationByText(textQuery: string): Promise<Cons
   }
 }
 
-export async function requestConsultationByAudio(base64Audio: string): Promise<ConsultationData> {
+export async function requestConsultationByAudio(
+  base64Audio: string,
+  preferredLanguage?: SupportedLanguageCode
+): Promise<ConsultationData> {
   try {
     const response = await aiClient.post<PythonResponse>("/api/agri-advice", {
       input_type: "audio",
       audio_base64: base64Audio,
+      preferred_language: preferredLanguage,
     });
     return mapPythonResponse(response.data);
   } catch (error) {
@@ -51,6 +61,7 @@ function mapPythonResponse(payload: PythonResponse): ConsultationData {
   return {
     sessionId: payload.session_id,
     detectedLanguage: payload.detected_language,
+    responseLanguage: payload.response_language,
     originalTranscript: payload.original_transcript,
     translatedResponse: payload.translated_response,
     audio: payload.audio
@@ -73,9 +84,21 @@ function mapDownstreamError(error: unknown): Error {
       axiosError.message ??
       "Unknown downstream error";
 
-    const downstreamError = new Error(`AI microservice error (${statusCode}): ${detail}`);
-    (downstreamError as Error & { statusCode?: number }).statusCode =
+    const normalizedDetail = String(detail).toLowerCase();
+    const blockedByPolicy =
+      statusCode === 403 ||
+      statusCode === 422 ||
+      /policy|blocked|unsafe|illegal|harm|disallow|prohibited|censor|moderation/.test(normalizedDetail);
+
+    const downstreamError = new Error(
+      blockedByPolicy
+        ? "Request was blocked by safety policy. Please revise your query and try again."
+        : `AI microservice error (${statusCode}): ${detail}`
+    ) as Error & { statusCode?: number; errorCode?: string };
+
+    downstreamError.statusCode =
       statusCode >= 400 && statusCode < 600 ? statusCode : 502;
+    downstreamError.errorCode = blockedByPolicy ? "CONTENT_BLOCKED" : "DOWNSTREAM_ERROR";
     return downstreamError;
   }
 

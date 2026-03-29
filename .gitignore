@@ -36,3 +36,4 @@ pnpm-debug.log*
 *.db
 *.mp3
 src/ai_pipeline/static/
+src/backend/data/

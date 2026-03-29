@@ -1,0 +1,27 @@
+export const SUPPORTED_LANGUAGE_CODES = [
+  "en",
+  "as",
+  "bn",
+  "brx",
+  "doi",
+  "gu",
+  "hi",
+  "kn",
+  "ks",
+  "kok",
+  "mai",
+  "ml",
+  "mni",
+  "mr",
+  "ne",
+  "or",
+  "pa",
+  "sa",
+  "sat",
+  "sd",
+  "ta",
+  "te",
+  "ur",
+] as const;
+
+export type SupportedLanguageCode = (typeof SUPPORTED_LANGUAGE_CODES)[number];
