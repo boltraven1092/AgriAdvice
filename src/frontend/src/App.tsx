@@ -1,121 +1,189 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import {
+  base64ToObjectUrl,
+  requestAudioConsultation,
+  requestTextConsultation,
+} from "./lib/api";
+import "./App.css";
+
+type Mode = "text" | "audio";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [mode, setMode] = useState<Mode>("text");
+  const [textQuery, setTextQuery] = useState("");
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [translatedResponse, setTranslatedResponse] = useState("");
+  const [detectedLanguage, setDetectedLanguage] = useState("");
+  const [originalTranscript, setOriginalTranscript] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
+  const canSubmit = useMemo(() => {
+    if (isSubmitting) {
+      return false;
+    }
+
+    if (mode === "text") {
+      return textQuery.trim().length >= 2;
+    }
+
+    return Boolean(audioFile);
+  }, [audioFile, isSubmitting, mode, textQuery]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!canSubmit) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    setTranslatedResponse("");
+    setDetectedLanguage("");
+    setOriginalTranscript("");
+    setSessionId("");
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+      setAudioUrl(null);
+    }
+
+    try {
+      const payload =
+        mode === "text"
+          ? await requestTextConsultation(textQuery.trim())
+          : await requestAudioConsultation(audioFile as File);
+
+      if (!payload.success || !payload.data) {
+        throw new Error(payload.error?.message ?? "Consultation failed");
+      }
+
+      setSessionId(payload.data.sessionId ?? "");
+      setDetectedLanguage(payload.data.detectedLanguage ?? "");
+      setOriginalTranscript(payload.data.originalTranscript ?? "");
+      setTranslatedResponse(payload.data.translatedResponse ?? "");
+
+      if (payload.data.audio?.content && payload.data.audio?.mimeType) {
+        const objectUrl = base64ToObjectUrl(payload.data.audio.content, payload.data.audio.mimeType);
+        setAudioUrl(objectUrl);
+      }
+    } catch (submitError) {
+      const errorMessage = submitError instanceof Error ? submitError.message : "Consultation failed";
+      setError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <main className="page">
+      <section className="hero-card">
+        <p className="eyebrow">AgriAdvice</p>
+        <h1>AI Farm Consultation Gateway</h1>
+        <p className="subhead">
+          Submit text or voice from the frontend, route through the API Gateway, and receive multilingual advice plus
+          generated audio.
+        </p>
       </section>
 
-      <div className="ticks"></div>
+      <section className="panel">
+        <div className="mode-switch" role="tablist" aria-label="Consultation mode">
+          <button
+            type="button"
+            className={mode === "text" ? "active" : ""}
+            onClick={() => setMode("text")}
+            aria-pressed={mode === "text"}
+          >
+            Text Consultation
+          </button>
+          <button
+            type="button"
+            className={mode === "audio" ? "active" : ""}
+            onClick={() => setMode("audio")}
+            aria-pressed={mode === "audio"}
+          >
+            Audio Consultation
+          </button>
+        </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+        <form className="consultation-form" onSubmit={handleSubmit}>
+          {mode === "text" ? (
+            <label className="field">
+              <span>Farm Query</span>
+              <textarea
+                value={textQuery}
+                onChange={(event) => setTextQuery(event.target.value)}
+                placeholder="Example: Pink bollworm risk is high after delayed rain. What should I do this week?"
+                rows={5}
+              />
+            </label>
+          ) : (
+            <label className="field">
+              <span>Upload Audio</span>
+              <input
+                type="file"
+                accept="audio/mpeg,audio/mp3,audio/wav,audio/webm,audio/ogg,audio/mp4,audio/x-m4a"
+                onChange={(event) => setAudioFile(event.target.files?.[0] ?? null)}
+              />
+              <small>{audioFile ? `Selected: ${audioFile.name}` : "Accepted formats: mp3, wav, webm, ogg, m4a"}</small>
+            </label>
+          )}
+
+          <button className="submit-btn" type="submit" disabled={!canSubmit}>
+            {isSubmitting ? "Running AI Consultation..." : "Submit Consultation"}
+          </button>
+        </form>
+
+        {error && <p className="error-banner">{error}</p>}
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <section className="panel output-panel">
+        <h2>Consultation Result</h2>
+        {!translatedResponse && !isSubmitting && <p className="muted">No response yet. Submit a query to begin.</p>}
+
+        {isSubmitting && <p className="muted">Gateway is processing your request...</p>}
+
+        {translatedResponse && (
+          <>
+            <dl className="meta-grid">
+              <div>
+                <dt>Session</dt>
+                <dd>{sessionId || "-"}</dd>
+              </div>
+              <div>
+                <dt>Detected Language</dt>
+                <dd>{detectedLanguage || "-"}</dd>
+              </div>
+            </dl>
+
+            <article className="response-block">
+              <h3>Translated Advice</h3>
+              <p>{translatedResponse}</p>
+            </article>
+
+            {originalTranscript && (
+              <article className="response-block transcript">
+                <h3>Original Transcript</h3>
+                <p>{originalTranscript}</p>
+              </article>
+            )}
+
+            {audioUrl && (
+              <article className="response-block">
+                <h3>Audio Response</h3>
+                <audio controls src={audioUrl} preload="metadata" />
+                <a href={audioUrl} download={`agriadvice-${sessionId || "response"}.mp3`} className="download-link">
+                  Download MP3
+                </a>
+              </article>
+            )}
+          </>
+        )}
+      </section>
+    </main>
+  );
 }
 
-export default App
+export default App;
